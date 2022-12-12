@@ -1,0 +1,2466 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+	<link rel="stylesheet" src="//normalize-css.googlecode.com/svn/trunk/normalize.css" />
+	<link rel="stylesheet" type="text/css" href="file:///C|/Users/rubSt/Desktop/chat-example/styles.css">
+	<!-- <link rel="icon" type="image/x-icon" href="file:///C|/Users/rubSt/Desktop/chat-example/FSR VII-Logo.svg"> -->
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+	<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+	<!-- flavicon, icon next to website title -->
+
+	<title> Skribble </title>
+	<meta charset="UTF-8">
+	<meta name="description"
+		content="A small experiment in HTML, CSS and JavaScript for writing a website to draw on. Made for a university project at BHT Berlin.">
+	<meta name="Author" content="Ruben">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<style>
+		html {
+			/* background: linear-gradient(to bottom, ivory 0%, #b9936c 100%); */
+			/* background: ivory; */
+			background-color: #b9936c;
+		}
+
+		body {
+			height: 100%;
+			margin: 0px;
+			/* background: ivory; */
+			background: linear-gradient(to bottom, ivory 0%, ivory 10%, #b9936c 50%, #b9936c 100%);
+			/* border-radius: 2rem; */
+			font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+		}
+
+		footer {
+			background-color: #b9936c;
+			margin-top: 1rem;
+		}
+
+		.tooltipHistory {
+			background-color: #ffffff;
+			border: none;
+			/* padding: 0.75rem 0.75rem; */
+			text-align: center;
+			text-decoration: none;
+			font-size: 2rem;
+			width: 11vw;
+			height: 5vh;
+			margin: 0.5rem 0.75rem;
+			cursor: pointer;
+			border-radius: 0.75rem;
+
+			position: relative;
+			display: inline-block;
+
+		}
+
+		.tooltipHistory .tooltiptext {
+			font-size: 1rem;
+			visibility: hidden;
+			width: 12rem;
+			height: 2rem;
+			background-color: #555;
+			color: #fff;
+			text-align: center;
+			border-radius: 6px;
+			padding: 1rem 0.5rem;
+			position: absolute;
+			z-index: 1;
+			bottom: 125%;
+			left: 50%;
+			margin-left: -6.5rem;
+			opacity: 0;
+			transition: opacity 0.5s 0.25s ease;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
+
+		.tooltipHistory .tooltiptext::after {
+			content: "";
+			position: absolute;
+			top: 100%;
+			left: 50%;
+			margin-left: -5px;
+			border-width: 5px;
+			border-style: solid;
+			border-color: #555 transparent transparent transparent;
+		}
+
+		.tooltipHistory:hover .tooltiptext {
+			visibility: visible;
+			opacity: 1;
+		}
+
+		.tooltip {
+			background-color: #ffffff;
+			border: none;
+			padding: 1rem 2rem;
+			text-align: center;
+			text-decoration: none;
+			display: inline-block;
+			font-size: 5rem;
+			margin: 1rem 2rem;
+			cursor: pointer;
+
+			position: relative;
+			display: inline-block;
+		}
+
+		.tooltip .tooltiptext {
+			font-size: 1.25rem;
+			visibility: hidden;
+			width: 18rem;
+			height: 3.25rem;
+			background-color: #555;
+			color: #fff;
+			text-align: center;
+			border-radius: 6px;
+			padding: 1rem 0.5rem;
+			position: absolute;
+			z-index: 1;
+			bottom: 125%;
+			left: 50%;
+			margin-left: -9rem;
+			opacity: 0;
+			transition: opacity 0.5s 0.25s ease;
+		}
+
+		.tooltip .tooltiptext::after {
+			content: "";
+			position: absolute;
+			top: 100%;
+			left: 50%;
+			margin-left: -5px;
+			border-width: 5px;
+			border-style: solid;
+			border-color: #555 transparent transparent transparent;
+		}
+
+		.tooltip:hover .tooltiptext {
+			visibility: visible;
+			opacity: 1;
+		}
+
+		.overlay-content button a {
+			color: black;
+			font-size: 5rem;
+			text-decoration: none;
+			text-align: center;
+		}
+
+		.overlay-content button a:hover {
+			color: mediumblue;
+		}
+
+		.flex-container {
+			display: flex;
+			align-items: baseline;
+			background-color: ivory;
+			flex-direction: row;
+			-webkit-touch-callout: none;
+			/* ensures that text is not highlighted when drawing outside the boundaries of the canvas */
+			-webkit-user-select: none;
+			-khtml-user-select: none;
+			-moz-user-select: none;
+			-ms-user-select: none;
+			user-select: none;
+		}
+
+		.flex-container>div {
+			color: black;
+			margin: 10px;
+			text-align: center;
+			line-height: 75px;
+			font-size: 20px;
+			overflow: visible;
+		}
+
+		#row {
+			height: 78vh;
+			background-color: ivory;
+			border-radius: 2rem;
+			/* border-bottom: 0.5rem double burlywood; */
+		}
+
+		/* 1 vh = 1% of the viewports height */
+
+		#topRow {
+			position: fixed;
+			top: 4vh;
+			height: 7vh;
+			width: 68vw;
+			align-self: auto;
+			align-items: flex-end;
+			/*background: khaki;*/
+			overflow: auto;
+		}
+
+		#bottomRow {
+			background-color: khaki;
+			border: 2px solid black;
+			border-radius: 15px;
+			margin: 10px;
+			height: 10vh;
+		}
+
+		#left {
+			flex-flow: column nowrap;
+			align-items: center;
+			align-self: flex-start;
+			align-content: space-between;
+			width: 12.5vw;
+		}
+
+		#historyDiv {
+			width: 1.5vw;
+			align-self: center;
+			align-items: flex-start;
+			display: block;
+			font-size: 3rem;
+			margin-right: 0.625rem;
+			margin-left: -2.5rem;
+			font-weight: 500;
+			/*background-color: khaki;*/
+			font-family: Cambria, "Hoefler Text", "Liberation Serif", Times, "Times New Roman", "serif";
+			transition: .75s ease;
+		}
+
+		#historyDiv a:hover {
+			color: goldenrod;
+		}
+
+		#right {
+			display: inline-block;
+			align-self: flex-end;
+			overflow-x: visible;
+			overflow-y: visible;
+		}
+
+		#counter {
+			float: left;
+			/* display: inline-block; */
+			width: 32vw;
+			text-align: right;
+			font-size: 1.75rem;
+		}
+
+		#letters {
+			float: right;
+			/* display: inline-block; */
+			width: 33vw;
+			text-align: right;
+			font-size: 2rem;
+		}
+
+		.colorChoice {
+			display: inline-block;
+			padding: 20px;
+			margin-right: 1rem;
+			margin-bottom: 0.75rem;
+			margin-left: 0.25rem;
+			text-align: center;
+			border-radius: 15px;
+			box-shadow: 0 9px rgb(79, 78, 78);
+			border-radius: 80px;
+		}
+
+		.colorChoice:active {
+			color: firebrick;
+			background-color: firebrick;
+			box-shadow: 0 5px rgb(42, 41, 41);
+			transform: translateY(4px);
+		}
+
+		table {
+			border-collapse: collapse;
+		}
+
+		td {
+			text-align: center;
+		}
+
+		#clear {
+			color: black;
+			background-color: white;
+			font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+			/* padding: 17px 10px; */
+			padding: 0.6rem 1.25rem;
+			font-size: 2.5rem;
+			font-weight: 600;
+		}
+
+		#fill {
+			background-color: black;
+			color: white;
+			padding: 0.8rem 1rem;
+			font-size: 2.5rem;
+			font-weight: 600;
+		}
+
+		#erase {
+			background-color: white;
+			color: black;
+			padding: 0.8rem .9rem;
+			font-size: 2.5rem;
+			font-weight: 600;
+		}
+
+		#eyedropper {
+			background-color: white;
+			color: black;
+			padding: 0.8rem 1rem;
+			font-size: 2.5rem;
+			font-weight: 600;
+		}
+
+		#sizes {
+			list-style-type: none;
+			display: inline;
+			overflow: auto;
+			text-align: center;
+			font-size: 20px;
+			/* background-color: khaki; */
+		}
+
+		#sizes>li {
+			display: inline-block;
+			padding-left: 50px;
+		}
+
+		.sizeChoice {
+			line-height: 20px;
+			color: black;
+			background-color: white;
+			font-size: 16px;
+			border-radius: 5px;
+			border: 1.5px double white;
+			padding: 5px;
+		}
+
+		#lw2 {
+			font-family: Arial, sans-serif;
+			font-weight: lighter;
+		}
+
+		#lw5 {
+			color: white;
+			background-color: black;
+			border: 2px solid black;
+			font-family: Arial, sans-serif;
+			font-weight: normal;
+			transform: translateY(3px);
+		}
+
+		#lw10 {
+			font-family: Arial, sans-serif;
+			font-weight: bold;
+		}
+
+		#lw20 {
+			font-family: Arial, sans-serif;
+			font-weight: bold;
+		}
+
+		#lw50 {
+			font-family: "Arial Black", sans-serif;
+			font-weight: bold;
+		}
+
+		h1 {
+			color: black;
+			margin: 5px;
+			text-decoration: none;
+		}
+
+		canvas {
+			background-color: white;
+			border-radius: 10px;
+			cursor: crosshair;
+			top: 8vh;
+			position: relative;
+			/* neccessary for getting correct coordinates and enabling pen input */
+		}
+
+		#chat-form {
+			background: ivory;
+			padding: 0.25rem;
+			display: flex;
+			height: 3rem;
+			box-sizing: border-box;
+			backdrop-filter: blur(10px);
+		}
+
+		#input {
+			padding: 0 1rem;
+			flex-grow: 1;
+			border-radius: 2rem;
+			margin: 0.25rem;
+			font-size: 1rem;
+			border: 1.5px solid black;
+		}
+
+		#input:focus {
+			outline: none;
+		}
+
+		#chat-form>button {
+			background: #333;
+			border: none;
+			padding: 0 1rem;
+			margin: 0.25rem;
+			border-radius: 5px;
+			outline: none;
+			color: #fff;
+		}
+
+		#messages {
+			list-style-type: none;
+			margin: 0;
+			padding: 0;
+			font-size: 1.25rem;
+		}
+
+		#messages>li {
+			padding: 0.5rem 1rem;
+			line-height: 1.5rem;
+		}
+
+		#messages>li:nth-child(odd) {
+			background: #efefef;
+		}
+
+		#messages>li:nth-child(even) {
+			background: #ffffff
+		}
+
+		#user-list {
+			position: fixed;
+			top: 0px;
+			width: 100%;
+			overflow: hidden;
+			background-color: ivory;
+		}
+
+		#user-list>a {
+			float: left;
+			padding: 0.5rem 0.5rem;
+		}
+
+		#users {
+			list-style-type: none;
+			box-sizing: border-box;
+			display: block;
+			text-align: center;
+			padding: 0;
+			margin: 0;
+		}
+
+		#users>li {
+			float: left;
+			padding: 0.5rem 0.5rem;
+		}
+
+		.overlay {
+			height: 100%;
+			width: 0;
+			position: fixed;
+			z-index: 1;
+			left: 0;
+			top: 0;
+			background-color: rgba(0, 0, 0, 0.9);
+			overflow-x: hidden;
+			transition: 0.6s;
+		}
+
+		.overlay-content {
+			position: relative;
+			top: 25%;
+			width: 100%;
+			text-align: center;
+			margin-top: 30px;
+			font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+			font-size: 26px;
+			color: aliceblue;
+		}
+
+		.overlay a {
+			padding: 8px;
+			text-decoration: none;
+			font-size: 36px;
+			color: #818181;
+			display: block;
+			transition: 0.3s;
+		}
+
+		.overlay a:hover {
+			color: #f1f1f1;
+		}
+
+		.overlay .closebtn {
+			position: absolute;
+			top: 0.5rem;
+			right: 4rem;
+			font-size: 5rem;
+			color: #585858;
+		}
+
+		.scoreOverlay {
+			height: 66vh;
+			width: 0vw;
+			position: fixed;
+			z-index: 1;
+			top: 11vh;
+			right: 18vw;
+			border-radius: 10px;
+			background-color: rgba(0, 0, 0, 0.9);
+			overflow-x: hidden;
+			transition: 0.6s;
+		}
+
+		.scoreOverlay-content {
+			position: relative;
+			top: 25%;
+			width: 100%;
+			text-align: center;
+			margin-top: 30px;
+			font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+			font-size: 26px;
+			color: aliceblue;
+		}
+
+		.scoreOverlay a {
+			padding: 8px;
+			text-decoration: none;
+			font-size: 36px;
+			color: #818181;
+			display: block;
+			transition: 0.3s;
+		}
+
+		.scoreOverlay a:hover {
+			color: #f1f1f1;
+		}
+
+		.scoreOverlay .closebtn {
+			position: absolute;
+			top: 0.5rem;
+			right: 2rem;
+			font-size: 4.5rem;
+			color: #585858;
+		}
+
+		#centerScores {
+			/* text-align: center; */
+			/* margin-top: 27vh; */
+			flex-direction: column;
+		}
+
+		#tableDiv {
+			height: 50vh;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			align-content: center;
+		}
+
+		#historyList {
+			position: relative;
+			list-style-type: none;
+			overflow: auto;
+		}
+
+		#historyList>li {
+			padding: 0.5rem 0.5rem;
+			text-align: center;
+		}
+
+		#historyTable {
+			color: white;
+			font-size: 2rem;
+		}
+
+		#username-form {
+			background: rgba(0, 0, 0, 0);
+			padding: 0.25rem;
+			height: 5rem;
+			box-sizing: border-box;
+			backdrop-filter: blur(10px);
+			font-size: 4.5rem;
+		}
+
+		#username-form>button {
+			background: #333;
+			border: none;
+			height: 2.7rem;
+			padding: 0 3rem;
+			margin: 0.25rem;
+			border-radius: 3px;
+			outline: none;
+			color: #fff;
+			font-size: 1.5rem;
+		}
+
+		#username {
+			font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+			font-size: 1.8rem;
+		}
+
+		#config-form {
+			position: relative;
+			top: 25%;
+			width: 100%;
+			text-align: center;
+			margin-top: 100px;
+			height: 3rem;
+			box-sizing: border-box;
+			backdrop-filter: blur(10px);
+			font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+			color: aliceblue;
+			font-size: 2.5rem;
+		}
+
+		#config-form>input {
+			font-size: 1.25rem;
+		}
+
+		.GameSetup {
+			background: white;
+			border: 2px solid black;
+			height: 2.7rem;
+			padding: 0 1rem;
+			margin: 0.25rem;
+			border-radius: 5px;
+			outline: none;
+			color: black;
+			font-size: 1.5rem;
+		}
+
+		.GameSetup:hover {
+			background: Gainsboro
+		}
+
+		#GameStart {
+			height: 5rem;
+			font-size: 2.5rem;
+		}
+
+		#SetupGame {
+			position: relative;
+			margin-top: 1rem;
+			left: 0.5vw;
+		}
+
+		#test1 {
+			position: fixed;
+			bottom: 10px;
+			margin-bottom: 65vh;
+			display: none;
+		}
+
+		#test2 {
+			position: fixed;
+			bottom: 10px;
+			margin-bottom: 55vh;
+			display: none;
+		}
+
+		#viewImageButton {
+			position: absolute;
+			bottom: 23vh;
+			margin-left: 2vw;
+			width: 9vw;
+			text-align: left;
+			font-size: 1.35rem;
+			height: 2.35rem;
+			border-radius: 0.5rem;
+		}
+
+		#scoreboard {
+			position: relative;
+			left: 0.5vw;
+			list-style-type: none;
+			border-radius: 15px;
+			text-align: center;
+			margin-bottom: 30px;
+			border: 3px solid black;
+			width: 11vw;
+			background: white;
+		}
+
+		#scoreboard>li {
+			text-align: right;
+			padding: 0rem 0.5rem;
+		}
+
+		.slidecontainer {
+			width: 95%;
+			background-color: #b9936c;
+			padding: 0.5rem 1rem;
+			border-radius: 1rem;
+			height: 10vh;
+			overflow: hidden;
+		}
+
+		.slider {
+			/* -webkit-appearance: none; */
+			width: 100%;
+			height: 1rem;
+			background: #d3d3d3;
+			outline: none;
+			opacity: 1;
+			-webkit-transition: .2s;
+			transition: opacity .2s;
+			border-radius: 0.6rem;
+			/* border: 1px solid black; */
+			/* margin: -0.5rem 0rem; */
+		}
+
+		.slider:hover {
+			opacity: 1;
+		}
+
+		.slider::-webkit-slider-thumb {
+			-webkit-appearance: none;
+			appearance: none;
+			width: 0px;
+			height: 2.5rem;
+			border-radius: 0.5rem;
+			background: transparent;
+			cursor: pointer;
+			border: 0.3rem solid black;
+		}
+
+		.slider::-moz-range-thumb {
+			width: 1rem;
+			height: 2.5rem;
+			border-radius: 0.5rem;
+			background: transparent;
+			cursor: pointer;
+			border: 0.3rem solid black;
+		}
+
+		#hueRange {
+			background: linear-gradient(to right, #ff0000 0%, #ffff00 16.6%, #00ff00 33.3%, #00ffff 50%, #0000ff 67.6%, #ff00ff 83.3%, #ff0000 100%);
+			height: 2.5rem;
+			margin-top: -0.01rem;
+			border-radius: 0.5rem;
+		}
+
+		#lightRange {
+			background: linear-gradient(to right, #000000 0%, #00ffff 50%, #ffffff 100%);
+		}
+
+		#satRange {
+			background: linear-gradient(to right, #808080 0%, #00ffff 100%);
+		}
+
+		#lightRange::-moz-range-thumb {
+			width: 5px;
+			height: 15px;
+			border-radius: 0.75rem;
+			background: transparent;
+			cursor: pointer;
+			border: 0.2rem solid black;
+		}
+
+		#satRange::-moz-range-thumb {
+			width: 5px;
+			height: 15px;
+			border-radius: 0.75rem;
+			background: transparent;
+			cursor: pointer;
+			border: 0.2rem solid black;
+		}
+
+		/* 
+		#testText {
+			color: blue;
+		} */
+
+		/* optimization for smaller displays and mobile phones, enlarges text and input fields if screen is less than 1100 pixels wide */
+		/*@media (max-width: 1100px) {
+		  #username-form { font-size: 6rem; }
+		  #username-form > button { font-size: 3rem; height: 4.5rem}
+		  #username { font-size: 3.2rem; }
+		  #input { font-size: 2.6rem; }
+		  #chat-form { height: 5rem; }
+		  #chat-form > button { font-size: 2rem; }
+		  #messages { font-size: 2.5rem; }
+		  #messages > li { padding: 1rem 1.5rem; }
+	    }*/
+	</style>
+
+</head>
+
+<body onLoad="init()">
+
+	<div id="myNav" class="overlay">
+		<!-- overlay to set username, only visible in the beginning -->
+		<div class="overlay-content">
+			<form id="username-form">
+				<u>Enter username:</u> <br><br>
+				<input type="text" id="username" placeholder="Max Mustermann" maxlength="10" size="15"
+					autocomplete="off" autofocus>
+				<button>Connect</button>
+			</form>
+		</div>
+	</div>
+
+	<div id="wordNav" class="overlay">
+		<!-- overlay to choose 1 out of 3 words -->
+		<div class="overlay-content">
+
+			<button class="tooltip" id="choosewords0" onclick="ChooseWord(choosewords[0]);">
+				<a id="link1" href="https://www.google.com/search?tbm=isch&as_q=Blobfisch" target="_blank"
+					rel="noopener noreferrer">Placeholder0</a>
+				<span class="tooltiptext">Click the BLUE word to select it and open a reference picture.</span>
+				<!-- Cmd + Click to open without switching tabs -->
+			</button>
+			<button class="tooltip" id="choosewords1" onclick="ChooseWord(choosewords[1]);">
+				<a id="link2" href="https://www.google.com/search?tbm=isch&as_q=Blobfisch" target="_blank"
+					rel="noopener noreferrer">Placeholder1</a>
+				<span class="tooltiptext">Click the BLUE word to select it and open a reference picture.</span>
+			</button>
+			<button class="tooltip" id="choosewords2" onclick="ChooseWord(choosewords[2]);">
+				<a id="link3" href="https://www.google.com/search?tbm=isch&as_q=Blobfisch" target="_blank"
+					rel="noopener noreferrer">Placeholder2</a>
+				<span class="tooltiptext">Click the BLUE word to select it and open a reference picture.</span>
+			</button>
+
+		</div>
+	</div>
+
+	<div id="configNav" class="overlay">
+		<a href="javascript:void(0)" class="closebtn" onclick="closeConfigNav()">&times;</a>
+		<!-- button to close this overlay -->
+		<div>
+			<form id="config-form">
+				Number of players: <br>
+				<input type="number" id="numPlayers" placeholder="2-10" min="2" max="10" size="3" height="40"
+					autocomplete="off"> <br><br><br>
+				Number of Rounds: <br>
+				<input type="number" id="numRounds" placeholder="1-5" min="1" max="5" size="3" autocomplete="off">
+				<br><br><br>
+				Seconds to draw/guess: <br>
+				<input type="number" id="numSeconds" placeholder="30-180" min="30" max="180" size="5"
+					autocomplete="off"> <br><br><br>
+				<button class="GameSetup" id="GameStart" onClick="startGame();">Start Game</button>
+			</form>
+		</div>
+	</div>
+
+	<br>
+	<div class="flex-container" id="row">
+		<div class="flex-container" style="flex-grow: 0" id="left">
+
+			<ul id="scoreboard"></ul>
+
+			<button class="GameSetup" id="test1">Test 1</button> <br>
+			<button class="GameSetup" id="test2">Test 2</button> <br>
+			<button class="GameSetup" id="SetupGame" onClick="openConfigNav();">Setup Game</button>
+
+			<button class="GameSetup" id="viewImageButton" onClick="viewImage();">View image
+				<i class='fas fa-clone' style="float: right; font-size: large; margin-top: 0.2rem;"
+					id="viewImageIcon"></i>
+			</button>
+
+		</div>
+
+		<div style="flex-grow: 50">
+			<!-- flex-grow defines importance of the object and therefore how much space is assigned -->
+
+			<div class="flex-container" id="topRow">
+
+				<div id="counter">Waiting for a game to be started</div>
+
+				<div id="letters"></div>
+
+			</div>
+
+			<canvas id="myCanvas" style="border:2px solid black;">
+				Your browser does not support the canvas element.
+				<!-- only displayed if canvas is not supported -->
+			</canvas>
+
+			<div id="scoreNav" class="scoreOverlay">
+				<a href="javascript:void(0)" class="closebtn" onclick="toggleScoreNav()">&times;</a>
+				<!-- button to close this overlay -->
+				<div id="centerScores">
+					<!-- <a>History:</a> -->
+					<!-- <ul id="historyList"></ul> -->
+					<!-- <center> -->
+					<a id="winnerDisplay">Winner</a>
+
+					<div id="tableDiv">
+						<table id="historyTable">
+							<!-- <tr>
+							<td><button class="tooltip" id="r1c1">
+									chosen word
+									<span class="tooltiptext">artist</span>
+								</button></td>
+							<td><button class="tooltip" id="r1c2">
+									chosen word
+									<span class="tooltiptext">artist</span>
+								</button></td>
+						</tr> -->
+						</table>
+					</div>
+					<!-- </center> -->
+				</div>
+			</div>
+
+		</div>
+
+		<div class="flex-container" id="historyDiv">
+			<a onClick="toggleScoreNav();">&laquo;</a>
+		</div>
+
+		<div id="right">
+			<!-- right column containing chat window and recent guesses -->
+
+			<div id="user-list">
+				<a>Users:</a>
+				<ul id="users"></ul> <!-- list of connected users, sits at the top of the chat -->
+			</div>
+
+			<ul id="messages"></ul> <!-- chat history -->
+
+			<form id="chat-form" action="">
+				<!-- text input field, sits at the very bottom -->
+				<input id="input" autocomplete="off" autofocus /><button>Send</button>
+			</form>
+
+		</div>
+	</div>
+
+	<script src="/socket.io/socket.io.js"></script> <!-- include the socket.io library -->
+
+	<script src="https://kit.fontawesome.com/85ad7806b8.js" crossorigin="anonymous"></script>
+
+	<script>
+
+		/// starting the socket connection using socket.io library
+
+		var socket = io();
+
+		/// links to HTML-Elements and variable definitions
+
+		var usernameForm = document.getElementById('username-form');
+		var username = document.getElementById('username');
+		var messages = document.getElementById('messages');
+		var chatForm = document.getElementById('chat-form');
+		var configForm = document.getElementById('config-form');
+		var numPlayers = document.getElementById('numPlayers');
+		var numRounds = document.getElementById('numRounds');
+		var numSeconds = document.getElementById('numSeconds');
+		var input = document.getElementById('input');
+		var users = document.getElementById('users');
+		var letters = document.getElementById('letters');
+		var counter = document.getElementById('counter');
+		var scoreboard = document.getElementById('scoreboard');
+		var centerScores = document.getElementById('centerScores');
+		// var historyList = document.getElementById('historyList');
+		var SetupGame = document.getElementById('SetupGame');
+
+		// button to show variables when debugging; set to be invisible
+		var test1 = document.getElementById('test1');
+		var test2 = document.getElementById('test2');
+
+		var viewImageIcon = document.getElementById('viewImageIcon');
+		var historyTable = document.getElementById('historyTable');
+		var winnerDisplay = document.getElementById('winnerDisplay');
+
+		var choosewords = [0, 0, 0];
+		var chosenword;
+
+		var intervalId;
+		let winner;
+		let points;
+		let lettersString = "";
+		var stopReveal = false;								// stops the revealing of letters during word selection (pausePhase) and after the word has been guessed correctly
+		var stopGuessing = false;							// stops guesses after the word has been guessed correctly to avoid duplicates
+		var gameAllowed = true;
+
+		var numberPlayers;
+		var numTurns;
+		var drawTime;
+
+		let r0c0Pic, r0c1Pic, r0c2Pic, r0c3Pic, r0c4Pic;
+		let r1c0Pic, r1c1Pic, r1c2Pic, r1c3Pic, r1c4Pic;
+		let r2c0Pic, r2c1Pic, r2c2Pic, r2c3Pic, r2c4Pic;
+		let r3c0Pic, r3c1Pic, r3c2Pic, r3c3Pic, r3c4Pic;
+		let r4c0Pic, r4c1Pic, r4c2Pic, r4c3Pic, r4c4Pic;
+
+		let historyNav = false;
+		let erasing = false;
+		let oldColor;
+
+		let eyedropping = false;
+
+		var mimi = 0;											// shows if this user sent two messages immediately following each other, enables changing colors between those messages
+
+		// array of all the usernames that are not allowed because these HTML-IDs are already in use or the grammar of the winning message would not work
+		var forbiddenNames = ['username', 'username-form', 'messages', 'chat-form', 'input', 'users', 'myNav', 'row', 'left', 'right', 'user-list', 'myCanvas', 'sizes', 'bottomRow', 'lw2', 'lw5', 'lw10', 'lw20', 'lw50', 'red', 'yellow', 'green', 'cyan', 'blue', 'purple', 'black', 'grey', 'white', 'clear', 'counter', 'configNav', 'config-form', 'numPlayers', 'numRounds', 'numSeconds', 'topRow', 'letters', 'GameStart', 'SetupGame', 'scoreboard', 'test', 'test1', 'test2', 'I', 'You'];
+
+
+		/// canvas setup and drawing functionality
+
+		let state = "idle";
+		var currentPlay = 0;								// variable to count the current round to check if the game is over
+		var myTurn = true;									// is true if it is this clients turn and they are allowed to draw
+
+		var c = document.getElementById("myCanvas");
+		c.width = (window.innerWidth * 0.65);
+		c.height = (window.innerHeight * 0.65);
+
+		var ctx = c.getContext("2d");
+
+		function init() {
+			// Get the specific canvas element from the HTML document
+			canvas = document.getElementById('myCanvas');
+
+			// If the browser supports the canvas tag, get the 2d drawing context for this canvas
+			if (canvas.getContext)
+				ctx = canvas.getContext('2d');
+
+			// Check that we have a valid context to draw on/with before adding event handlers
+			if (ctx) {
+				// React to mouse events on the canvas, and mouseup on the entire document
+				canvas.addEventListener('mousedown', sketchpad_mouseDown, false);
+				canvas.addEventListener('mousemove', sketchpad_mouseMove, false);
+				window.addEventListener('mouseup', mouseOrTouchUp, false);
+
+				// React to touch events on the canvas
+				canvas.addEventListener('touchstart', sketchpad_touchStart, false);
+				canvas.addEventListener('touchmove', sketchpad_touchMove, false);
+				window.addEventListener('touchend', mouseOrTouchUp, false);
+			}
+
+			let tmpSlider = document.getElementById('hueRange');
+			tmpSlider.value = 180;
+			tmpSlider = document.getElementById('satRange');
+			tmpSlider.value = 100;
+			tmpSlider = document.getElementById('lightRange');
+			tmpSlider.value = 50;
+
+		}
+		ctx.strokeStyle = "hsl(0, 100%, 1%)"; 				// set the default color of the stroke to black
+
+		var colorSelection = ctx.strokeStyle.slice();		// copy selected stroke color
+		var sizeSelection = "5";							// set default linewidth to five
+
+		var mouseX, mouseY, moving, mouseDown = 0;
+
+		var touchX, touchY;
+
+		var x2, y2, x1, y1, drawSize2;
+
+		var userDrawnPixels = [];
+
+		function getTouchPos(e) {
+			if (!e) {
+				var e = event;
+			}
+			if (e.touches) {
+				if (e.touches.length == 1) { // Only deal with one finger
+					var touch = e.touches[0]; // Get the information for finger #1
+					touchX = touch.pageX - touch.target.offsetLeft;
+					touchY = touch.pageY - touch.target.offsetTop;
+				}
+			}
+		}
+
+		function drawLine(ctx, x, y, size, color) {
+			viewImageIcon.style.color = color;
+			ctx.strokeStyle = color;
+			ctx.beginPath();
+
+			var n = userDrawnPixels.length;
+			var point = userDrawnPixels[n - 1];
+
+			if ((n > 1) && moving) {
+				var prevPoint = userDrawnPixels[n - 2];
+				ctx.moveTo(prevPoint[0], prevPoint[1]);
+				ctx.lineTo(point[0], point[1]);
+			} else {
+				ctx.moveTo(point[0], point[1]);
+				ctx.lineTo(point[0], point[1]);
+			}
+
+			ctx.lineCap = "round";
+			ctx.lineJoin = "round";
+			ctx.lineWidth = size;
+			ctx.stroke();
+			ctx.closePath();
+			ctx.fill();
+		}
+
+
+		function drawDot(ctx, x, y, size, color) {
+			viewImageIcon.style.color = color;
+			ctx.fillStyle = color;
+			ctx.strokeStyle = color;
+			var size2 = size * 0.5;
+
+			// Draw a filled circle
+			ctx.beginPath();
+			ctx.arc(x, y, size2, 0, Math.PI * 2, true);
+			ctx.closePath();
+			ctx.fill();
+		}
+
+		// Keep track of the mouse button being pressed and draw a dot at current location
+		function sketchpad_mouseDown() {
+			if (eyedropping) {
+				eyedropper();
+			} else {
+				userDrawnPixels.push([mouseX, mouseY]);
+				drawDot(ctx, mouseX, mouseY, sizeSelection, colorSelection);
+
+				mouseDown = 1;
+
+				x2 = mouseX / window.innerWidth;																/// convert absolute coordinates (in pixels) into relative ones (in percent of screen width/height)
+				y2 = mouseY / window.innerHeight;
+
+				socket.emit('drawStart', x2, y2, colorSelection, sizeSelection);
+			}
+		}
+
+
+		function mouseOrTouchUp() {
+			mouseDown = 0;
+			moving = 0;
+
+			socket.emit('drawStop');
+		}
+
+		function sketchpad_mouseMove(e) {
+			// Update the mouse co-ordinates when moved
+			getMousePos(e);
+
+			// Draw a dot if the mouse button is currently being pressed
+			if (mouseDown == 1) {
+				drawLine(ctx, mouseX, mouseY, sizeSelection, colorSelection);
+				userDrawnPixels.push([mouseX, mouseY]);
+				moving = 1;
+
+				x2 = mouseX / window.innerWidth;
+				y2 = mouseY / window.innerHeight;
+
+				socket.emit('drawMove', x2, y2, sizeSelection, colorSelection);
+			}
+		}
+
+		// Get the current mouse position relative to the top-left of the canvas
+		function getMousePos(e) {
+			if (!e) {
+				var e = event;
+			}
+			if (e.offsetX) {
+				mouseX = e.offsetX;
+				mouseY = e.offsetY;
+			}
+			else if (e.layerX) {
+				mouseX = e.layerX;
+				mouseY = e.layerY;
+			}
+		}
+
+		// Draw something when a touch start is detected
+		function sketchpad_touchStart() {
+			getTouchPos();
+			userDrawnPixels.push([touchX, touchY]);
+			drawDot(ctx, touchX, touchY, sizeSelection, colorSelection);
+
+			x2 = touchX / window.innerWidth;																/// convert absolute coordinates (in pixels) into relative ones (in percent of screen width/height)
+			y2 = touchY / window.innerHeight;
+
+			socket.emit('drawStart', x2, y2, colorSelection, sizeSelection);
+
+			// Prevent a scrolling action as a result of this touchmove triggering.
+			event.preventDefault();
+
+			moving = 1;
+
+		}
+
+		function sketchpad_touchMove(e) {
+			getTouchPos(e);
+
+			userDrawnPixels.push([touchX, touchY]);
+			drawLine(ctx, touchX, touchY, sizeSelection, colorSelection);
+
+			x2 = touchX / window.innerWidth;
+			y2 = touchY / window.innerHeight;
+
+			socket.emit('drawMove', x2, y2, sizeSelection, colorSelection);
+
+			// Prevent a scrolling action as a result of this touchmove triggering.
+			e.preventDefault();
+
+		}
+
+		// change linewidth and indicate changes via button color, text color and transformation (pressed down)
+
+		function changeSize(newSize) {
+
+			var oldSize = sizeSelection;							// copy old linewidth so that its button can be reset
+			let tmpString1 = "lw".concat("", oldSize);				// attach linewidth to "lw" e.q. tmpString = "lw5"
+			let tmpString2 = "lw".concat("", newSize);
+
+			var oldButton = document.getElementById(tmpString1);	// find the button corresponding to old linewidth by id
+			oldButton.style.transform = "translateY(0px)";			// 'unpress' this button aka. move it up to its initial state(not transformed)
+			oldButton.style.backgroundColor = "white";				// change back to default(not currently selected) style 
+			oldButton.style.color = "black";
+			oldButton.style.border = "2px solid white";
+
+			var newButton = document.getElementById(tmpString2);	// find the button that has been pressed to change the linewidth
+			newButton.style.transform = "translateY(3px)";			// 'press' this button aka. move it down 3 pixels
+			newButton.style.backgroundColor = "black";				// invert the color scheme to indicate this buttons linewidth being in use
+			newButton.style.color = "white";
+			newButton.style.border = "2px double black";
+
+			sizeSelection = newSize;								// assign the new linewidth so it will be used in onDraw()
+		}
+
+		// change line color if client is allowed to draw
+
+		function changeColor(color) {
+			if (myTurn) {
+				colorSelection = color;
+				fillButton.style.background = color;
+				if (color == "#050000") {
+					tmpLight = 1;
+				} else {
+					tmpLight = eval(color.slice(-4, -2));			// extract lightness from given color string to check whether the fillButton's icon is visible in the current color
+				}
+				if (tmpLight <= 33 && tmpLight != 00) {				// if a very dark color has been chosen, 
+					fillButton.style.color = "white";				// invert the fillButton's icon to keep it from being invisible
+				} else {
+					fillButton.style.color = "black";
+				}
+				// test1.innerHTML = color;
+				// test2.innerHTML = tmpLight;
+			} else return;
+		}
+
+		// clear canvas when button is pressed or new turn starts
+
+		function clearCanvas() {
+			if (myTurn) {
+				ctx.fillStyle = "white";
+				ctx.fillRect(0, 0, c.width, c.height);
+				socket.emit('clearCanvas');
+			}
+		}
+
+		// passive drawing (showing what other client draws)
+
+		socket.on('drawStart', function (x, y, drawColor, drawSize) {
+			if (myTurn) {
+				ctx.strokeStyle = drawColor;					// revert color to selection
+				ctx.fillStyle = drawColor;
+				//ctx.moveTo((x * window.innerWidth), (y * window.innerHeight));											/// convert relative coordinates back into absolute ones (see x2 in line 317)
+				//ctx.beginPath();
+
+				x1 = x * window.innerWidth;
+				y1 = y * window.innerHeight;
+				drawDot(ctx, x1, y1, drawSize, drawColor);
+				userDrawnPixels.push([x1, y1]);
+				///// the conversion results in a bit of squashing if the screens aspect ratios do not match up. It also scales the drawn image to fit any screen.
+				///// This is intended so that everybody can see the full image as oppose to only a selective part of it if their screen is smaller than that of the drawer
+			}
+		});
+
+		socket.on('drawMove', function (x, y, drawSize, drawColor) {
+			/*ctx.lineTo((x * window.innerWidth), (y * window.innerHeight));
+			ctx.lineWidth = drawSize;
+			ctx.stroke();*/
+
+			if (myTurn) {
+				x1 = x * window.innerWidth;
+				y1 = y * window.innerHeight;
+				drawLine(ctx, x1, y1, drawSize, drawColor);
+				userDrawnPixels.push([x1, y1]);
+				moving = 1;
+			}
+		});
+
+		socket.on('drawStop', function () {
+			moving = 0;
+			ctx.strokeStyle = "transparent";
+		});
+
+		socket.on('clearCanvas', function () {
+			ctx.fillStyle = "white";
+			ctx.fillRect(0, 0, c.width, c.height);
+		});
+
+		/// functions for opening/closing overlays
+
+		function openNav() {											// open an overlay in which the user enters their username
+			document.getElementById("myNav").style.width = "100%";
+		}
+
+		function closeNav() {											// close the overlay and set the cursor to the text input field, called when user submits username
+			document.getElementById("myNav").style.width = "0%";
+			input.focus();
+
+			//openScoreNav();
+		}
+
+		function openWordNav() {
+			document.getElementById("wordNav").style.width = "100%";
+		}
+
+		function closeWordNav() {
+			document.getElementById("wordNav").style.width = "0%";
+		}
+
+		function openConfigNav() {
+			//closeScoreNav();
+			if (gameAllowed) {
+				document.getElementById("configNav").style.width = "100%";
+				numPlayers.focus();
+			} else return;
+
+		}
+
+		function closeConfigNav() {
+			document.getElementById("configNav").style.width = "0%";
+			input.focus();
+		}
+
+		function openScoreNav() {
+			historyNav = true;
+			document.getElementById("scoreNav").style.width = "65.5vw";
+			document.getElementById("historyDiv").style.transform = "rotate(180deg)";
+			document.getElementById("historyDiv").style.marginTop = "1.8rem";
+		}
+
+		// toggle the history when the arrows are pressed repeatedly
+		function toggleScoreNav() {
+
+			if (!historyNav) {
+				document.getElementById("scoreNav").style.width = "65.5vw";
+				document.getElementById("historyDiv").style.transform = "rotate(180deg)";
+				document.getElementById("historyDiv").style.marginTop = "1.8rem";
+			} else {
+				document.getElementById("scoreNav").style.width = "0%";
+				document.getElementById("historyDiv").style.transform = "rotate(0deg)";
+				document.getElementById("historyDiv").style.marginTop = "0rem";
+			}
+			historyNav = !historyNav;
+		}
+
+		function closeScoreNav() {
+			historyNav = false;
+			document.getElementById("scoreNav").style.width = "0%";
+			document.getElementById("historyDiv").style.transform = "rotate(0deg)";
+			document.getElementById("historyDiv").style.marginTop = "0rem";
+		}
+
+		function enableGameSetup() {
+			gameAllowed = true;
+			SetupGame.style.background = "white";
+		}
+
+		function disableGameSetup() {
+			gameAllowed = false;
+			SetupGame.style.background = "gainsboro";
+		}
+
+		/// functions for word selection and letter revealing 
+
+		function ChooseWord(ChosenOne) {
+			chosenword = ChosenOne;
+			socket.emit('WordChosen', chosenword);
+			closeWordNav();
+		}
+
+		function blankLetters() {
+			if (myTurn) {
+				letters.innerHTML = chosenword;
+				letters.style.fontSize = "2rem";
+				letters.style.fontWeight = "normal";
+			} else {
+				var l = chosenword.length;
+				var i = 0;
+
+				lettersString = "";
+				while (i < l) {
+					lettersString = lettersString.concat(" _");
+					i++;
+				}
+
+				letters.innerHTML = lettersString;
+				letters.style.fontSize = "3.25rem";
+				letters.style.fontWeight = "bolder";
+			}
+		}
+
+		function fillBlank(pos) {											// makes one letter (at position pos) visible
+
+			if (myTurn || stopReveal) {
+				return;
+			} else {
+				let letter = chosenword.slice(pos, pos + 1);				// letters contains only the letter at position pos
+				//lettersString.charAt(2 * pos - 1) = letter;
+				tempStr1 = lettersString.slice(0, (2 * pos + 1));			// tempStr1 contains the first letters up to position pos
+				tempStr2 = lettersString.slice(2 * (pos + 1));			// tempStr2 contains the last letters from position pos to the end
+				tempStr3 = tempStr1.concat("", letter);					// tempStr3 contains the first letters including the letter at position pos
+
+				lettersString = tempStr3.concat(tempStr2);				// everything is put back together
+				letters.innerHTML = lettersString;
+			}
+
+		}
+
+		/// events handling game loop, initial name setting and chatting/guessing
+
+		usernameForm.addEventListener('submit', function (e) {			// checks if the Connect button or Enter have been pressed
+			e.preventDefault();
+			if (username.value && !(forbiddenNames.includes(username.value))) {	  // if a valid username has been chosen, making sure it does not match any of the used HTML-IDs to ensure functionality when 'deleting' the username
+				socket.emit('username set', username.value);			// tranmit this username to the server which will save it as belonging to this socket
+				closeNav();											// close overlay and focus on the chat input
+
+				var newUser = document.createElement('li');			// write the chosen username into userlist
+				newUser.textContent = username.value;
+				newUser.style.background = "ivory";
+				newUser.style.color = "lightseagreen";
+				users.appendChild(newUser);
+
+				var newUser2 = document.createElement('li');			// write the chosen username into scoreboard
+				newUser2.textContent = username.value.concat(": 00 Points");
+				newUser2.style.color = "lightseagreen";
+				newUser2.id = username.value.concat("2");
+				scoreboard.appendChild(newUser2);
+			}
+		})
+
+		chatForm.addEventListener('submit', function (e) {				// checks if the Send button or Enter have been pressed
+			e.preventDefault();
+			if (state == "playPhase" && !myTurn) {
+				if (input.value) {
+					if (stopGuessing) {
+						input.value = '';
+					} else {
+						socket.emit('guess', input.value, username.value);
+						input.value = '';
+					}
+				}
+			} else if (state == "playPhase" && myTurn) {
+				input.value = '';
+				return;
+			} else {
+				if (input.value) {											// if a message has been entered
+					socket.emit('chat message', input.value, username.value);	// transmit the message as well as who sent it to the server which will forward it to the other sockets
+
+					var item = document.createElement('li');					// create a list item for messages from myself (sender)
+					if (mimi == 1) {
+						item.style.background = "rgb(255, 255, 88)";
+					} else { item.style.background = "rgb(255, 255, 162)" }	// highlight these messages in a lighter color to differentiate
+					item.style.textAlign = "right";								// justify these messages to the right to further differentiate
+					item.style.borderRadius = "0.35rem";
+					item.textContent = input.value;
+					messages.appendChild(item);								// append these messages to the chat history
+
+					window.scrollTo(0, document.body.scrollHeight);			// scroll down to this message so it it visible, older messages get hidden first
+					input.value = '';
+					mimi = !mimi;												// toggle color
+				}
+			}
+		});
+
+		socket.on('correctGuess', function (name, place) {
+
+			var item = document.createElement('li');					// create a new list item in the 'messages' list
+			item.textContent = name.concat(" guessed correctly!");
+			item.style.textAlign = "left";
+			item.style.borderRadius = "0.35rem";
+			item.style.color = "forestgreen";
+			messages.appendChild(item);
+			window.scrollTo(0, document.body.scrollHeight);
+
+			let tmpStr1 = name.concat("2");
+			var newScore = document.getElementById(tmpStr1);
+
+			if (name == username.value) {
+				letters.innerHTML = chosenword;
+				stopReveal = true;
+				stopGuessing = true;
+			}
+
+			let tmpStr3 = newScore.textContent.slice(-10, -7);								// old score, up to last turn
+			totalScore = eval(tmpStr3);
+
+			var score;
+			var numerator;
+			var guessers = numberPlayers - 1;												// number of people guessing
+			var middle = Math.floor(guessers / 2) + 1;
+
+			if (place == middle || place == 0) {												// if number of guessers is uneven, this is the middle one; 
+				// place is 0 if a late player who is not allowed to draw guesses correctly first
+				score = Math.floor((2 / (guessers * 2)) * 100);
+			} else {
+				numerator = 3 - ((place - 1) / Math.floor(guessers / 2));
+				score = Math.floor((numerator / (guessers * 2)) * 100);						// first person gets approx. three times as many points as last person to guess
+			}
+			totalScore = totalScore + score;
+
+			let tmpStr2 = ": ";
+			tmpStr2 = tmpStr2.concat(totalScore);
+			newScore.textContent = name.concat(tmpStr2, " Points");
+
+			sortScores();
+
+		});
+
+		socket.on('chat message', function (msg, name) {				// gets called when a message from another socket is forwarded by the server
+			var item = document.createElement('li');					// create a new list item in the 'messages' list
+			item.textContent = name.concat(": ", msg);					// write the messages content and who it came from into the list item
+			item.style.textAlign = "left";
+			item.style.borderRadius = "0.35rem";
+			messages.appendChild(item);
+			window.scrollTo(0, document.body.scrollHeight);
+			mimi = 0;													// a new message from someone else resets the toglling of the colors of the users messages
+		});
+
+		socket.on('user connected', function (username) {				// sends a broadcast message (to everybody exept the person who trigerred this event) that someone connected
+			var item = document.createElement('li');
+			item.style.background = "paleturquoise";					// highlight this message in blue(ish)
+			item.style.borderRadius = "0.35rem";
+			item.textContent = username.concat(" connected");
+			messages.appendChild(item);
+			window.scrollTo(0, document.body.scrollHeight);
+
+			var newUser = document.createElement('li');
+			newUser.textContent = username;
+			newUser.style.background = "ivory";
+			newUser.id = username;										// give this list entry an identifier
+			users.appendChild(newUser);									// write username of newly connected socket into list 'users'
+
+			var newUser2 = document.createElement('li');
+			newUser2.textContent = username.concat(": 00 Points");
+			newUser2.id = username.concat("2");
+			scoreboard.appendChild(newUser2);
+
+		});
+
+		socket.on('user disconnected', function (username) {			// sends a broadcast message (to everybody exept the person who trigerred this event) that someone disconnected
+			var item = document.createElement('li');
+			item.style.background = "lightcoral";							// highlight this message in red(ish)
+			item.textContent = username.concat(" disconnected");
+			item.style.borderRadius = "0.35rem";
+			messages.appendChild(item);
+			window.scrollTo(0, document.body.scrollHeight);
+
+			var Users = users.getElementsByTagName("li");				// 'deletes' (actually makes it invisible) entry of disconnected user from user list
+			for (i = 0; i < Users.length; i++) {
+				if (Users[i].textContent == username) {
+					Users[i].style.display = "none";
+				}
+			}
+			var Scores = scoreboard.getElementsByTagName("li");
+			let tmpStr, tmpStr2;
+			for (i = 0; i < Scores.length; i++) {
+				tmpStr = Scores[i].textContent.slice(0, -11);
+				if (tmpStr == username || tmpStr == username.concat(":")) {
+					Scores[i].style.display = "none";
+				}
+			}
+
+		});
+
+		socket.on('Words3back', function (words) {				    // awaits 3 words from the server
+			choosewords[0] = words[0];
+			choosewords[1] = words[1];
+			choosewords[2] = words[2];					// fill the choosewords with the 3 words to choose from
+			document.getElementById('link1').innerHTML = choosewords[0];
+			document.getElementById('link1').href = "https://www.google.com/search?tbm=isch&as_q=".concat(choosewords[0]);
+			document.getElementById('link2').innerHTML = choosewords[1];
+			document.getElementById('link2').href = "https://www.google.com/search?tbm=isch&as_q=".concat(choosewords[1]);
+			document.getElementById('link3').innerHTML = choosewords[2];
+			document.getElementById('link3').href = "https://www.google.com/search?tbm=isch&as_q=".concat(choosewords[2]);
+		});
+
+		socket.on('chosenWord', function (word) {
+			chosenword = word;
+			blankLetters();
+			if (state == "pausePhase") {
+				socket.emit('nextPlay');
+			}
+		});
+
+		socket.on('clientList', function (clientArray) {				// receives an array of currently connected users to avoid duplicate usernames
+
+			for (const name of clientArray) {
+
+				if (document.getElementById(name) == undefined) {
+
+					var newUser = document.createElement('li');
+					newUser.textContent = name;
+					newUser.style.background = "ivory";
+					newUser.id = name;
+					users.appendChild(newUser);
+
+					var newUser2 = document.createElement('li');
+					newUser2.textContent = name.concat(": 00 Points");
+					newUser2.id = name.concat("2");
+					scoreboard.appendChild(newUser2);
+
+					let tmpStr = name.concat("2");
+
+					forbiddenNames.push(tmpStr);						// avoid deleting score when player disconnects by adding the id of their scoreboard entry to forbidden list
+
+					forbiddenNames.push(name);							// avoid duplicate usernames by adding usernames to forbidden list
+
+				}
+			}
+
+		});
+
+		socket.on('playersUnequal', function () {
+			alert('Number of players does not match! \nPlease change your input or wait for more players.');
+			enableGameSetup();
+		});
+
+		let dup = true;													// avoid duplicate row creation because 'gameInfo' seems to arrive two times
+		let tmpName;
+
+		socket.on('gameInfo', function (numberOfPlayers, numberOfTurns) {		// players that did not initiate the game receive information about the number of players and turns; neccessary for calculating scores
+			numberPlayers = numberOfPlayers;
+			numTurns = numberOfTurns;
+			let Rounds = (numTurns / (numberPlayers * 2));
+			disableGameSetup();
+
+			let r, cell, Row, Col;
+			if (dup) {
+				for (Row = 0; Row < Rounds; Row++) {
+
+					r = historyTable.insertRow(Row);
+					for (Col = 0; Col < numberOfPlayers; Col++) {
+						cell = r.insertCell(Col);
+
+						tmpName = "r".concat(Row, "c", Col);
+						// test1.innerHTML = tmpName;
+						cell.innerHTML = "<button class='tooltipHistory' id='".concat(tmpName, "' onclick='window.open(", tmpName, "Pic", ");'>", tmpName, "</button>");
+						// cell.id = "r".concat(Row, "c", Col);							// r2c1 => row 2, column/player 1
+
+					}
+				}
+			}
+			dup = !dup;
+		});
+
+		// points for active drawer from the turn that just ended
+
+		let tmpRow, tmpCol, tmpId;
+		let tmpIdTip, tmpInner;
+
+		socket.on('activePointsFull', function (player, currentRound) {									// everybody guessed the word
+			var score = 50;
+
+			let tmpStr1 = player.concat("2");
+			var newScore = document.getElementById(tmpStr1);
+
+			let tmpStr3 = newScore.textContent.slice(-10, -7);								// old score, up to last turn
+			totalScore = eval(tmpStr3);
+			totalScore = totalScore + score;
+
+			let tmpStr2 = ": ";
+			tmpStr2 = tmpStr2.concat(totalScore);
+			newScore.textContent = player.concat(tmpStr2, " Points");
+
+			sortScores();
+
+			// write the word from the round that just ended into the chat
+			var item = document.createElement('li');
+			item.style.background = "white";
+			item.style.color = "darkgreen";
+			item.style.borderRadius = "0.35rem";
+			item.style.textAlign = "center";
+
+			let tmpStr4 = "The word was: ";
+			item.textContent = tmpStr4.concat(chosenword);
+			messages.appendChild(item);
+			window.scrollTo(0, document.body.scrollHeight);
+
+			tmpRow = Math.trunc(((currentRound - 1) / numberPlayers));			// round 1 -> tmpRow = 0
+			tmpCol = ((currentRound - 1) % numberPlayers);						// turn 1 -> tmpCol = 0
+			tmpId = "r".concat(tmpRow, "c", tmpCol);
+			// test1.innerHTML = tmpId;
+
+			tmpInner = "'".concat(chosenword, "'<span class='tooltiptext' id='", tmpId, "Tip", "'>Drawn by: </span>");
+			document.getElementById(tmpId).innerHTML = tmpInner;
+			tmpIdTip = tmpId.concat("Tip");
+			document.getElementById(tmpIdTip).innerHTML = "Drawn by: <br><br>".concat(player);
+
+			// let tmpPic = tmpId.concat("Pic");
+			// tmpPic = c.toDataURL("image/png");
+
+			// let tmpClick = "window.open(".concat(tmpPic, ");");
+			// tmpId.onclick = function () {
+			// 	window.open(tmpPic);
+			// };
+
+			if (tmpRow == 0) {
+				switch (tmpCol) {
+					case 0:
+						r0c0Pic = c.toDataURL("image/png");
+						break;
+					case 1:
+						r0c1Pic = c.toDataURL("image/png");
+						break;
+					case 2:
+						r0c2Pic = c.toDataURL("image/png");
+						break;
+					case 3:
+						r0c3Pic = c.toDataURL("image/png");
+						break;
+					case 4:
+						r0c4Pic = c.toDataURL("image/png");
+						break;
+					default: test1.innerHTML = "Error with 'tmpCol'";
+				}
+			} else if (tmpRow == 1) {
+				switch (tmpCol) {
+					case 0:
+						r1c0Pic = c.toDataURL("image/png");
+						break;
+					case 1:
+						r1c1Pic = c.toDataURL("image/png");
+						break;
+					case 2:
+						r1c2Pic = c.toDataURL("image/png");
+						break;
+					case 3:
+						r1c3Pic = c.toDataURL("image/png");
+						break;
+					case 4:
+						r1c4Pic = c.toDataURL("image/png");
+						break;
+					default: test1.innerHTML = "Error with 'tmpCol'";
+				}
+			} else if (tmpRow == 2) {
+				switch (tmpCol) {
+					case 0:
+						r2c0Pic = c.toDataURL("image/png");
+						break;
+					case 1:
+						r2c1Pic = c.toDataURL("image/png");
+						break;
+					case 2:
+						r2c2Pic = c.toDataURL("image/png");
+						break;
+					case 3:
+						r2c3Pic = c.toDataURL("image/png");
+						break;
+					case 4:
+						r2c4Pic = c.toDataURL("image/png");
+						break;
+					default: test1.innerHTML = "Error with 'tmpCol'";
+				}
+			} else if (tmpRow == 3) {
+				switch (tmpCol) {
+					case 0:
+						r3c0Pic = c.toDataURL("image/png");
+						break;
+					case 1:
+						r3c1Pic = c.toDataURL("image/png");
+						break;
+					case 2:
+						r3c2Pic = c.toDataURL("image/png");
+						break;
+					case 3:
+						r3c3Pic = c.toDataURL("image/png");
+						break;
+					case 4:
+						r3c4Pic = c.toDataURL("image/png");
+						break;
+					default: test1.innerHTML = "Error with 'tmpCol'";
+				}
+			} else if (tmpRow == 4) {
+				switch (tmpCol) {
+					case 0:
+						r4c0Pic = c.toDataURL("image/png");
+						break;
+					case 1:
+						r4c1Pic = c.toDataURL("image/png");
+						break;
+					case 2:
+						r4c2Pic = c.toDataURL("image/png");
+						break;
+					case 3:
+						r4c3Pic = c.toDataURL("image/png");
+						break;
+					case 4:
+						r4c4Pic = c.toDataURL("image/png");
+						break;
+					default: test1.innerHTML = "Error with 'tmpCol'";
+				}
+			}
+
+		});
+
+		socket.on('activePoints', function (player, guessed, currentRound) {							// not everybody guessed the word in time
+			var score, fraction;
+			fraction = (guessed / (numberPlayers - 1)) * 100;
+			score = Math.floor(0.5 * fraction);
+
+			let tmpStr1 = player.concat("2");
+			var newScore = document.getElementById(tmpStr1);
+
+			let tmpStr3 = newScore.textContent.slice(-10, -7);								// old score, up to last turn
+			totalScore = eval(tmpStr3);
+			totalScore = totalScore + score;
+
+			let tmpStr2 = ": ";
+			tmpStr2 = tmpStr2.concat(totalScore);
+			newScore.textContent = player.concat(tmpStr2, " Points");
+
+			sortScores();
+
+			// write the word from the round that just ended into the chat
+			var item = document.createElement('li');
+			item.style.background = "white";
+			item.style.color = "darkgreen";
+			item.style.borderRadius = "0.35rem";
+			item.style.textAlign = "center";
+
+			let tmpStr4 = "The word was: ";
+			item.textContent = tmpStr4.concat(chosenword);
+			messages.appendChild(item);
+			window.scrollTo(0, document.body.scrollHeight);
+
+			// let tmpRow, tmpCol, tmpId;
+			tmpRow = Math.trunc(((currentRound - 1) / numberPlayers));			// round 1 -> tmpRow = 0
+			tmpCol = ((currentRound - 1) % numberPlayers);						// turn 1 -> tmpCol = 0
+			tmpId = "r".concat(tmpRow, "c", tmpCol);
+			tmpIdTip = tmpId.concat("Tip");
+
+			tmpInner = "'".concat(chosenword, "'<span class='tooltiptext' id='", tmpIdTip, "'></span>");
+			// let tmpInner = "'".concat(chosenword, "'<span class='tooltiptext' id='", tmpIdTip, "'>Drawn by: <br><br>", player, "</span>");
+			document.getElementById(tmpId).innerHTML = tmpInner;
+			document.getElementById(tmpIdTip).innerHTML = "Drawn by: <br>".concat(player);
+
+			// let tmpPic = tmpId.concat("Pic");
+			// tmpPic = c.toDataURL("image/png");
+
+
+			// let tmpClick = "window.open(".concat(tmpPic, ");");
+			// tmpId.onclick = function () {
+			// 	window.open(tmpPic);
+			// };
+
+			if (tmpRow == 0) {
+				switch (tmpCol) {
+					case 0:
+						r0c0Pic = c.toDataURL("image/png");
+						break;
+					case 1:
+						r0c1Pic = c.toDataURL("image/png");
+						break;
+					case 2:
+						r0c2Pic = c.toDataURL("image/png");
+						break;
+					case 3:
+						r0c3Pic = c.toDataURL("image/png");
+						break;
+					case 4:
+						r0c4Pic = c.toDataURL("image/png");
+						break;
+					default: test1.innerHTML = "Error with 'tmpCol'";
+				}
+			} else if (tmpRow == 1) {
+				switch (tmpCol) {
+					case 0:
+						r1c0Pic = c.toDataURL("image/png");
+						break;
+					case 1:
+						r1c1Pic = c.toDataURL("image/png");
+						break;
+					case 2:
+						r1c2Pic = c.toDataURL("image/png");
+						break;
+					case 3:
+						r1c3Pic = c.toDataURL("image/png");
+						break;
+					case 4:
+						r1c4Pic = c.toDataURL("image/png");
+						break;
+					default: test1.innerHTML = "Error with 'tmpCol'";
+				}
+			} else if (tmpRow == 2) {
+				switch (tmpCol) {
+					case 0:
+						r2c0Pic = c.toDataURL("image/png");
+						break;
+					case 1:
+						r2c1Pic = c.toDataURL("image/png");
+						break;
+					case 2:
+						r2c2Pic = c.toDataURL("image/png");
+						break;
+					case 3:
+						r2c3Pic = c.toDataURL("image/png");
+						break;
+					case 4:
+						r2c4Pic = c.toDataURL("image/png");
+						break;
+					default: test1.innerHTML = "Error with 'tmpCol'";
+				}
+			} else if (tmpRow == 3) {
+				switch (tmpCol) {
+					case 0:
+						r3c0Pic = c.toDataURL("image/png");
+						break;
+					case 1:
+						r3c1Pic = c.toDataURL("image/png");
+						break;
+					case 2:
+						r3c2Pic = c.toDataURL("image/png");
+						break;
+					case 3:
+						r3c3Pic = c.toDataURL("image/png");
+						break;
+					case 4:
+						r3c4Pic = c.toDataURL("image/png");
+						break;
+					default: test1.innerHTML = "Error with 'tmpCol'";
+				}
+			} else if (tmpRow == 4) {
+				switch (tmpCol) {
+					case 0:
+						r4c0Pic = c.toDataURL("image/png");
+						break;
+					case 1:
+						r4c1Pic = c.toDataURL("image/png");
+						break;
+					case 2:
+						r4c2Pic = c.toDataURL("image/png");
+						break;
+					case 3:
+						r4c3Pic = c.toDataURL("image/png");
+						break;
+					case 4:
+						r4c4Pic = c.toDataURL("image/png");
+						break;
+					default: test1.innerHTML = "Error with 'tmpCol'";
+				}
+			}
+
+		});
+
+		/// functions relatign to winner and scores
+
+		function determineWinner() {											// compares scores and writes the username corresponding to highest score into "winner"
+
+			var items = scoreboard.getElementsByTagName('li');
+			winner = items[0].textContent.slice(0, -12);
+			points = eval(items[0].textContent.slice(-10, -7));
+
+		}
+
+		function insertWinner() {
+
+			// var winnerItem = document.createElement('li');
+
+			if (winner == username.value) {
+				// winnerItem.innerHTML = "You".concat(" won with ", points, " points!");
+				winnerDisplay.innerHTML = "You".concat(" won with ", points, " points!");
+			} else {
+				// winnerItem.innerHTML = winner.concat(" won with ", points, " points!");
+				winnerDisplay.innerHTML = winner.concat(" won with ", points, " points!");
+			}
+
+			// winnerItem.style.fontSize = "3rem";
+			// winnerItem.style.fontWeight = "bolder";
+			// winnerItem.style.color = "gold";
+			winnerDisplay.style.fontSize = "3rem";
+			winnerDisplay.style.fontWeight = "bolder";
+			winnerDisplay.style.color = "gold";
+
+			// historyList.prepend(winnerItem);								// move the new list item to the top of the list
+
+			/* let i;
+			let items = historyList.getElementsByTagName("li");
+			for (i = 1; i < items.length; i++) {
+
+				items[i].style.color = "goldenrod";							// mark the newest entry by turning all others darker
+
+			}
+			*/
+		}
+
+		function sortScores() {												// sort the scoreboard in descending order to show current standings
+
+			var i, switching, b, shouldSwitch;
+			switching = true;
+			/* Make a loop that will continue until
+			no switching has been done: */
+			while (switching) {
+				// start by saying: no switching is done:
+				switching = false;
+				b = scoreboard.getElementsByTagName("li");
+				// Loop through all list-items:
+				for (i = 0; i < (b.length - 1); i++) {
+					// start by saying there should be no switching:
+					shouldSwitch = false;
+					/* check if the next item should
+					switch place with the current item: */
+
+					if (Number(b[i].textContent.slice(-10, -7)) < Number(b[i + 1].textContent.slice(-10, -7))) {
+						/* if next item is numerically
+						lower than current item, mark as a switch
+						and break the loop: */
+						shouldSwitch = true;
+						break;
+					}
+				}
+				if (shouldSwitch) {
+					/* If a switch has been marked, make the switch
+					and mark the switch as done: */
+					b[i].parentNode.insertBefore(b[i + 1], b[i]);
+					switching = true;
+				}
+			}
+		}
+
+		function clearScores() {												// reset scores by overwriting them with their starting value: "00"
+
+			let i;
+			var items = scoreboard.getElementsByTagName("li");
+			for (i = 0; i < items.length; i++) {
+
+				items[i].textContent = items[i].textContent.slice(0, -12).concat(": 00 Points");
+
+			}
+		}
+
+		function clearHistory() {												// clear the history overlay's table, including buttons and tooltips
+
+			let trs = document.getElementsByTagName("tr");
+
+			let n, tmpI, tmpLength;
+			tmpLength = (trs.length - 3);										// exclude the three table rows for color selection
+			// test1.innerHTML = tmpLength;
+
+			for (n = 0; n <= tmpLength; n++) {
+				tmpI = ((tmpLength - n) - 1);
+				historyTable.deleteRow(tmpI);
+			}
+
+		}
+
+		/// game start, countdown and game states
+
+		function startGame() {
+			if (numPlayers.value >= 2 && numPlayers.value <= 10 && numRounds.value >= 1 && numRounds.value <= 5 && numSeconds.value >= 30 && numSeconds.value <= 180) {
+				socket.emit('startGame', numPlayers.value, numRounds.value, numSeconds.value);
+				numTurns = (numPlayers.value * numRounds.value * 2);
+				closeConfigNav();
+			}
+		}
+
+		configForm.addEventListener('submit', function (e) {				// checks if the Send button or Enter have been pressed
+			e.preventDefault();
+			startGame();
+		});
+
+		// countdown timer setting, updating and revealing letters at the right moments
+
+		function mycounter(countdownSeconds) {
+
+			var length = Math.ceil(chosenword.length / 2);				// maximum number of letters visible (= half of the length, rounded up)
+			var Sec10less = (drawTime - 10);								// time in which letters are made visible (= draw time - 10s)
+			var fillInterval = Math.floor(Sec10less / length);				// interval between letters being revealed in s
+			var usedpos = [];
+			var duplicateArr = [];
+			for (let i = 0; i < length; i++) {
+				duplicateArr.push(false);
+			}
+
+			var addArr = [10];
+			for (let i = 0; i < length; i++) {
+				addArr.push(addArr[i] + fillInterval);
+				//test1.innerHTML = addArr[0];
+			}
+			var pos;
+
+			var duplicatePoints = false;
+			var cntIdle = 0;
+
+			if (!counter) {
+				return;
+			}
+			clearInterval(intervalId);											// clear old timers
+
+			var target = new Date().getTime() + 1000 * countdownSeconds;  		// target time
+
+			// update function
+			function updatecounter() {
+				var time = Math.floor((target - new Date().getTime()) / 1000); 	// countdown time in seconds
+				if (time < 0) {												 	// if countdown ends
+
+					clearInterval(intervalId); 								// clear interval
+					time = 0; 												// set time to 0 to avoid displaying negative values
+
+				}
+				if (time <= 10) {
+					counter.style.color = "red";							// change color of countdown to red if there are less than 11 seconds remaining
+				} else {
+					counter.style.color = "black";						// change it back to black, the default
+				}
+
+				for (let i = 0; i < length; i++) {
+
+					if ((time == addArr[i]) && (!duplicateArr[i])) {		// if the timer reaches the last point at which a letter should be revealed and that time is still within the sepcified draw time
+						pos = Math.floor(Math.random() * chosenword.length);
+						while (usedpos.includes(pos)) {
+							pos = Math.floor(Math.random() * chosenword.length);	// generate a random number between 0 and the length of the chosen word (inclusive)
+						}
+						usedpos.push(pos);
+						fillBlank(pos);												// reveal the letter at position pos
+						duplicateArr[i] = !duplicateArr[i];
+					}
+				}
+
+				// split time into seconds and minutes
+				var seconds = '0' + (time % 60);
+				time = (time - seconds) / 60;
+				var minutes = '0' + (time % 60);
+				time = (time - minutes) / 60;
+
+				// make string from split values
+				var str = minutes.substring(minutes.length - 2) + ':' + seconds.substring(seconds.length - 2);
+
+				counter.innerHTML = str;
+
+				if (str == "00:00") {										// check if the timer has reached its end
+					if (state == "playPhase") {								// playPhase ended
+
+						if (!duplicatePoints) {
+							socket.emit('activePointRequest');
+						}
+						duplicatePoints = !duplicatePoints;
+						/*
+						if(currentPlay == numTurns) {						// this was the last round, go to gameOver	
+							socket.emit('nextScores');
+						}else {
+							socket.emit('nextPause');						// there are more rounds to come, go to pausePhase
+						}*/
+
+					} else if (state == "pausePhase" && myTurn) {			// pausePhase ended
+
+						var randomWord = Math.floor(Math.random() * 3);
+						ChooseWord(choosewords[randomWord]);
+
+					} else {												// gameOver ended
+
+						if (cntIdle == 4) {									// gets called five times but is only sopposed to emit once
+							socket.emit('nextIdle');
+							cntIdle = 0;
+						} else {
+							cntIdle++;
+						}
+
+					}
+				}
+
+			}
+
+			intervalId = setInterval(updatecounter, 200); 				// start interval to execute update function periodically (every 200ms to make it udate smoothly)
+		}
+
+		socket.on('playPhase', function (Time) {							// gets called when a round starts
+
+			state = "playPhase";
+
+			currentPlay++;
+			drawTime = Time;
+			mycounter(Time);
+			stopReveal = false;
+
+		});
+
+		socket.on('pausePhase', function (activeName) {					// gets called when the round is over and a new word gets selected
+
+			socket.emit('clearCanvas');									// clear canvas for next drawing
+			stopReveal = true;
+			stopGuessing = false;
+
+			if (activeName == username.value) {
+				socket.emit('Words3');
+				myTurn = true;
+				openWordNav();
+				colorSelection = "black";									// set default color to black
+			} else {
+				myTurn = false;												// disable drawing
+				colorSelection = "transparent";								// disable selecting other colors
+				letters.innerHTML = activeName.concat(" is choosing a word");
+				letters.style.fontSize = "2rem";
+
+				input.focus();
+			}
+			state = "pausePhase";
+
+			mycounter(30);
+
+		});
+
+		socket.on('gameOver', function () {								// gets called when the game is over and scores are shown
+
+			state = "idle";
+			myTurn = true;
+
+			sortScores();
+			determineWinner();
+			insertWinner();
+
+			openScoreNav();
+
+			letters.innerHTML = "Game Over";
+			letters.style.fontSize = "3rem";
+			letters.style.fontWeight = "bolder";
+			letters.style.color = "darkblue";
+
+			mycounter(60);													// after 60 seconds the scores are cleared and 'nextIdle' is emitted
+			stopReveal = true;
+
+		});
+
+		socket.on('idle', function () {										// gets called after finishing a game, reseting the scores (server-side)
+
+			socket.emit('clearCanvas');
+			clearScores();
+			closeScoreNav();
+
+			clearHistory();
+
+			myTurn = true;													// enable drawing for everybody again
+			clearInterval(intervalId);
+
+			counter.innerHTML = "Waiting for a new game to be started";
+			letters.innerHTML = "";
+			letters.style.color = "black";
+
+			enableGameSetup();
+
+		});
+
+		/// initialization; updating of client list and opening of the username setting overlay
+
+		socket.emit('checkClients');										// request currently connected users to display their names
+
+		openNav();															// open overlay immediately when the page gets loaded
+
+
+	</script>
+
+</body>
+
+<footer>
+	<!-- bottom part of the site containing color and size selection -->
+
+	<center>
+
+		<ul id="sizes">
+			<!-- buttons to select linewidth with which to draw -->
+			<li> <button class="sizeChoice" id="lw2" onclick="changeSize(2);"> 2 px </button> </li>
+			<li> <button class="sizeChoice" id="lw5" onclick="changeSize(5);"> 5 px </button> </li>
+			<li> <button class="sizeChoice" id="lw10" onclick="changeSize(10);"> 10 px </button> </li>
+			<li> <button class="sizeChoice" id="lw20" onclick="changeSize(20);"> 20 px </button> </li>
+			<li> <button class="sizeChoice" id="lw50" onclick="changeSize(50);"> 50 px </button> </li>
+		</ul>
+
+		<div><br></div> <!-- placeholder to separate color selction from size selction -->
+
+		<!-- ///NEW -->
+		<!-- table containing color selection, split into three sliders controlling hue, saturation and lightness, and three buttons for clearing the canvas, filling it and switching to erasing (color -> white) respectively -->
+		<div class="slidecontainer">
+			<table>
+				<tr>
+					<td>
+						<center>
+							<input type="range" min="1" max="100" value="50" class="slider" id="lightRange"
+								style="width: 95%">
+						</center>
+					</td>
+					<td style="width: 2.5%" rowspan="3">
+						<button class="colorChoice" id="clear" onclick="clearCanvas();"> <i class="fas fa-trash"></i>
+						</button>
+
+					</td>
+					<td style="width: 2.5%" rowspan="3">
+						<button class="colorChoice" id="fill" onclick="fillCanvas();"> <i class="fas fa-fill-drip"></i>
+						</button>
+
+					</td>
+					<td style="width: 2.5%" rowspan="3">
+						<button class="colorChoice" id="erase" onclick="toggleEraser();"> <i class="fas fa-eraser"></i>
+						</button>
+
+					</td>
+					<td style="width: 2.5%" rowspan="3">
+						<button class="colorChoice" id="eyedropper" onclick="equipEyedropper();"> <i
+								class="fas fa-eye-dropper"></i>
+						</button>
+
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<center>
+							<input type="range" min="1" max="100" value="100" class="slider" id="satRange"
+								style="width: 95%">
+						</center>
+					</td>
+				</tr>
+				<tr style="height: 3rem;">
+					<td>
+						<center>
+							<input type="range" min="1" max="360" value="180" class="slider" id="hueRange"
+								style="width: 95%">
+						</center>
+					</td>
+				</tr>
+			</table>
+		</div>
+
+	</center>
+
+	<script>
+
+		/// additional variables and element references for the footer (color selection and quick access buttons)
+
+		var hueSlider = document.getElementById("hueRange");
+		var lightSlider = document.getElementById("lightRange");
+		var satSlider = document.getElementById("satRange");
+		var fillButton = document.getElementById("fill");
+		var eraseButton = document.getElementById("erase");
+		var eyedropperButton = document.getElementById("eyedropper");
+		// var testText = document.getElementById("testText");
+
+		let hue = 0;
+		let lightness = 50;
+		let saturation = 100;
+		let hslColor;
+
+		// This function is called whenever the lowest slider's handle is moved. It updates the drawing color's hue setting.
+		hueSlider.oninput = function () {
+			hue = this.value;
+			let tmphsl1 = hue.concat(", ", saturation, "%, ", lightness, "%");
+			let tmphsl2 = "hsl(".concat(tmphsl1, ")");					// calculate the updated color including the settings of the other two sliders
+			// test1.style.color = tmphsl2;
+
+			let tmpBG = "linear-gradient(to right, hsl(".concat(this.value, ", 100%, 0%) 0%, hsl(", this.value, ", 100%, 50%) 50%, hsl(", this.value, ", 100%, 100%) 100%)");
+			lightSlider.style.background = tmpBG;						// update the lightness slider to reflect the chosen hue and show possible lightness variations
+			let tmpBG2 = "linear-gradient(to right, hsl(".concat(this.value, ", 0%, 50%) 0%, hsl(", this.value, ", 50%, 50%) 50%, hsl(", this.value, ", 100%, 50%) 100%)");
+			satSlider.style.background = tmpBG2;						// update the saturation slider to reflect the chosen hue and show possible saturation variations
+			// test1.innerHTML = hue;
+
+			changeColor(tmphsl2);										// select the updated color as the drawing color
+			unequipEraser();											// if the eraser has been equipped using the button, unequip it
+
+		}
+
+		// This function is called whenever the middle slider's handle is moved. It updates the drawing color's hue setting.
+		lightSlider.oninput = function () {
+			lightness = this.value;
+			let tmphsl3 = hue.concat(", ", saturation, "%, ", lightness, "%");
+			let tmphsl4 = "hsl(".concat(tmphsl3, ")");
+			// test1.style.color = tmphsl4;
+
+			changeColor(tmphsl4);
+			unequipEraser();
+
+		}
+
+		// This function is called whenever the lowest slider's handle is moved. It updates the drawing color's hue setting.
+		satSlider.oninput = function () {
+			saturation = this.value;
+			let tmphsl5 = hue.concat(", ", saturation, "%, ", lightness, "%");
+			let tmphsl6 = "hsl(".concat(tmphsl5, ")");
+			// test1.style.color = tmphsl6;
+
+			changeColor(tmphsl6);
+			unequipEraser();
+
+		}
+
+		// function to fill the whole canvas with the currently selected color and broadcast the action 
+		function fillCanvas() {
+			if (myTurn) {
+				ctx.fillStyle = colorSelection;
+				ctx.fillRect(0, 0, c.width, c.height);
+				socket.emit('fillCanvas', colorSelection);
+			}
+		}
+
+		socket.on('fillCanvas', function (color) {
+			ctx.fillStyle = color;
+			ctx.fillRect(0, 0, c.width, c.height);
+		})
+
+		// toggle between drawing in white or the previously selected color when pressing the eraser button repeatedly
+		function toggleEraser() {
+
+			if (!erasing) {
+				oldColor = colorSelection;
+				eraseButton.style.background = "black";
+				eraseButton.style.color = "white";
+				changeColor('hsl(0, 100%, 100%)');					// hsl representation of white; neccessary because changeColor() slices the string it is given to adapt the fillButton for visibility
+			} else {
+				eraseButton.style.background = "white";
+				eraseButton.style.color = "black";
+				changeColor(oldColor);								// if the color has not been changed from the default (black), changeColor() has to get a hsl(...) string again, which is why the default has been changed accordingly
+			}
+			erasing = !erasing;
+			// test1.innerHTML = erasing;
+		}
+
+		// invert the colors of the erase button back to default (off) if a new color has been selected
+		function unequipEraser() {
+			eraseButton.style.background = "white";
+			eraseButton.style.color = "black";
+			erasing = false;										// enable the eraser button to be used again 
+		}
+
+		function eyedropper() {
+			if (myTurn) {
+				let rgbaColor = ctx.getImageData(mouseX, mouseY, 1, 1).data;
+				let tmpColor = "rgba(".concat(rgbaColor, ")");
+				colorSelection = tmpColor;
+				fillButton.style.background = tmpColor;
+				// test1.innerHTML = tmpColor;
+			} else return;
+
+			eyedropping = false;
+
+			eyedropperButton.style.background = "white"
+			eyedropperButton.style.color = "black";
+		}
+
+		function equipEyedropper() {
+			eyedropping = true;
+
+			eyedropperButton.style.background = "black"
+			eyedropperButton.style.color = "white";
+		}
+
+		function viewImage() {
+			var image_data = c.toDataURL("image/png");
+
+			window.open(image_data);								// The browser will typically display the image in a new tab
+		}
+
+		//endNEW
+	</script>
+
+</footer>
+
+</html>
