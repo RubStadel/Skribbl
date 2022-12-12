@@ -10,12 +10,12 @@
 
 ---
 
-### **ToDo:**
+### possible **ToDo:**
 
 * [ ] improve design of scoreboard
 * [ ] test functionality for late players (join after game has started)
-* [ ] implement flashy showing of final scores
-* [ ] **reorganize code for readability !!!**
+* [ ] implement flashier presentation of final scores
+* [ ] selection of which .csv to use when starting the server
 
 ---
 

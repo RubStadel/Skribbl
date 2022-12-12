@@ -31,7 +31,7 @@ var words = [];									// word array of all words to skribble
 var usedwords = [];								// word array of all previously used words
 var words3 = [0, 0, 0];							// the 3 words to deliver
 
-fs.createReadStream("PokemonGerman4thGen.csv")
+fs.createReadStream("TestWords.csv")
 	.pipe(csv({}))
 	.on("data", (data) => words.push(data))
 	.on("end", () => {
@@ -40,7 +40,7 @@ fs.createReadStream("PokemonGerman4thGen.csv")
 
 // send html file to client when they open the website
 app.get('/', (req, res) => {
-	res.sendFile(__dirname + '/canvas_noSM8.html');							// send the html file located in the same directory as this file
+	res.sendFile(__dirname + '/client.html');								// send the html file located in the same directory as this file
 	//res.sendFile(__dirname + '/canvas - test.html');						// send the html file located in the same directory as this file
 });
 

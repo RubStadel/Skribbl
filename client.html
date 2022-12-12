@@ -4,11 +4,8 @@
 <head>
 
 	<link rel="stylesheet" src="//normalize-css.googlecode.com/svn/trunk/normalize.css" />
-	<link rel="stylesheet" type="text/css" href="file:///C|/Users/rubSt/Desktop/chat-example/styles.css">
-	<!-- <link rel="icon" type="image/x-icon" href="file:///C|/Users/rubSt/Desktop/chat-example/FSR VII-Logo.svg"> -->
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 	<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-	<!-- flavicon, icon next to website title -->
 
 	<title> Skribble </title>
 	<meta charset="UTF-8">
@@ -980,6 +977,7 @@
 		let winner;
 		let points;
 		let lettersString = "";
+		let specialChars = ["-", ".", ":"];
 		var stopReveal = false;								// stops the revealing of letters during word selection (pausePhase) and after the word has been guessed correctly
 		var stopGuessing = false;							// stops guesses after the word has been guessed correctly to avoid duplicates
 		var gameAllowed = true;
@@ -1387,13 +1385,15 @@
 				letters.style.fontSize = "2rem";
 				letters.style.fontWeight = "normal";
 			} else {
-				var l = chosenword.length;
-				var i = 0;
 
-				lettersString = "";
-				while (i < l) {
-					lettersString = lettersString.concat(" _");
-					i++;
+				for (i = 0; i < chosenword.length; i++) {
+					if (specialChars.includes(chosenword[i])) {							// current character is '-', ':' or '.'
+						lettersString = lettersString.concat(" ", chosenword[i]);		// write the character with an added space
+					} else if (chosenword[i] == " ") {									// current character is a space (e.g. between words)
+						lettersString = lettersString.concat("\xa0\xa0");				// add two spaces
+					} else {
+						lettersString = lettersString.concat(" _");						// blank the current character
+					}
 				}
 
 				letters.innerHTML = lettersString;
@@ -2279,7 +2279,6 @@
 
 		<div><br></div> <!-- placeholder to separate color selction from size selction -->
 
-		<!-- ///NEW -->
 		<!-- table containing color selection, split into three sliders controlling hue, saturation and lightness, and three buttons for clearing the canvas, filling it and switching to erasing (color -> white) respectively -->
 		<div class="slidecontainer">
 			<table>
@@ -2458,7 +2457,6 @@
 			window.open(image_data);								// The browser will typically display the image in a new tab
 		}
 
-		//endNEW
 	</script>
 
 </footer>
