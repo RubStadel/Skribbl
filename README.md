@@ -1,12 +1,33 @@
-## Working features:
+## How To Use:
 
-* game loop (with or without interaction)
-* word selection (random if not during time limit)
-* displaying random letters
-* guessing (only if you are not drawing; only readable if wrong)
-* writing word in chat after turn ended
-* calculation and updating of scores (for guessers and drawer)
-* showing winner at the end of the game
+* download node.js [here](https://nodejs.dev/download/ "node.js downloads") and install it
+* open node.js command prompt
+* enter `npm install express@4 --save`
+* enter `npm install socket.io --save`
+* navigate to the location of this folder using `cd [directory]` to go deeper into the tree, `cd ..` to go up one step or `cd /` to return to C:
+* run the server file by entering `node server.js`
+* open a browser of your choice and go to port 3000 of your own IP-address using "localhost:3000" or "[IP-address]:3000" 
+* *(optional: - to see the transfer of data in action, open another tab/window to the same address and create a second client)*
+
+* create your own word lists as .csv files and play with friends (**The first line of all .csv files has to be `SkribbleWort`!!!**)
+
+---
+
+Further reading:
+
+> [Concept Inspiration](https://skribbl.io/ "Original game")
+>
+> [Get Started with socket.io](https://socket.io/get-started/chat "Small chat application and socket.io API documentation")
+>
+> [Canvas reference](https://www.w3schools.com/graphics/canvas\_reference.asp "Also a great place to learn about/look up all things HTML, CSS etc.")
+>
+> [Code Inspiration](https://zipso.net/a-simple-touchscreen-sketchpad-using-javascript-and-html5/ "Basic drawing functionality")
+>
+> [Countdown](https://stackoverflow.com/questions/8634415/recurrent-javascript-countdown "See 'Krzysztof's answer")
+>
+> [JS Map](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global\_Objects/Map "Useful for assigning usernames to sockets (serverside)")
+>
+> [JS Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global\_Objects/Promise "Needed because currently connected sockets are saved as a promise")
 
 ---
 
