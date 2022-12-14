@@ -319,6 +319,11 @@ io.on('connection', (socket) => {
 		socket.broadcast.emit('idle');
 	});
 
+	socket.on('clearHistory', () => {
+		socket.emit('clearHistory');
+		socket.broadcast.emit('clearHistory');
+	});
+
 });
 
 /// start listening on the designated port

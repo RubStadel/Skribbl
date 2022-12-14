@@ -1112,6 +1112,11 @@
 
 		// Keep track of the mouse button being pressed and draw a dot at current location
 		function sketchpad_mouseDown() {
+
+			if (!myTurn) {
+				return;
+			}
+
 			if (eyedropping) {
 				eyedropper();
 			} else {
@@ -1138,6 +1143,10 @@
 		function sketchpad_mouseMove(e) {
 			// Update the mouse co-ordinates when moved
 			getMousePos(e);
+
+			if (!myTurn) {
+				return;
+			}
 
 			// Draw a dot if the mouse button is currently being pressed
 			if (mouseDown == 1) {
@@ -1169,6 +1178,11 @@
 
 		// Draw something when a touch start is detected
 		function sketchpad_touchStart() {
+
+			if (!myTurn) {
+				return;
+			}
+
 			getTouchPos();
 			userDrawnPixels.push([touchX, touchY]);
 			drawDot(ctx, touchX, touchY, sizeSelection, colorSelection);
@@ -1186,6 +1200,11 @@
 		}
 
 		function sketchpad_touchMove(e) {
+
+			if (!myTurn) {
+				return;
+			}
+
 			getTouchPos(e);
 
 			userDrawnPixels.push([touchX, touchY]);
@@ -1258,19 +1277,19 @@
 		// passive drawing (showing what other client draws)
 
 		socket.on('drawStart', function (x, y, drawColor, drawSize) {
-			if (myTurn) {
-				ctx.strokeStyle = drawColor;					// revert color to selection
-				ctx.fillStyle = drawColor;
-				//ctx.moveTo((x * window.innerWidth), (y * window.innerHeight));											/// convert relative coordinates back into absolute ones (see x2 in line 317)
-				//ctx.beginPath();
 
-				x1 = x * window.innerWidth;
-				y1 = y * window.innerHeight;
-				drawDot(ctx, x1, y1, drawSize, drawColor);
-				userDrawnPixels.push([x1, y1]);
-				///// the conversion results in a bit of squashing if the screens aspect ratios do not match up. It also scales the drawn image to fit any screen.
-				///// This is intended so that everybody can see the full image as oppose to only a selective part of it if their screen is smaller than that of the drawer
-			}
+			ctx.strokeStyle = drawColor;					// revert color to selection
+			ctx.fillStyle = drawColor;
+			//ctx.moveTo((x * window.innerWidth), (y * window.innerHeight));											/// convert relative coordinates back into absolute ones (see x2 in line 317)
+			//ctx.beginPath();
+
+			x1 = x * window.innerWidth;
+			y1 = y * window.innerHeight;
+			drawDot(ctx, x1, y1, drawSize, drawColor);
+			userDrawnPixels.push([x1, y1]);
+			///// the conversion results in a bit of squashing if the screens aspect ratios do not match up. It also scales the drawn image to fit any screen.
+			///// This is intended so that everybody can see the full image as oppose to only a selective part of it if their screen is smaller than that of the drawer
+
 		});
 
 		socket.on('drawMove', function (x, y, drawSize, drawColor) {
@@ -1278,13 +1297,13 @@
 			ctx.lineWidth = drawSize;
 			ctx.stroke();*/
 
-			if (myTurn) {
-				x1 = x * window.innerWidth;
-				y1 = y * window.innerHeight;
-				drawLine(ctx, x1, y1, drawSize, drawColor);
-				userDrawnPixels.push([x1, y1]);
-				moving = 1;
-			}
+
+			x1 = x * window.innerWidth;
+			y1 = y * window.innerHeight;
+			drawLine(ctx, x1, y1, drawSize, drawColor);
+			userDrawnPixels.push([x1, y1]);
+			moving = 1;
+
 		});
 
 		socket.on('drawStop', function () {
@@ -1323,6 +1342,9 @@
 			if (gameAllowed) {
 				document.getElementById("configNav").style.width = "100%";
 				numPlayers.focus();
+
+				socket.emit('clearHistory');											// clear the links to pictures from previous game
+
 			} else return;
 
 		}
@@ -1656,6 +1678,10 @@
 			dup = !dup;
 		});
 
+		socket.on('clearHistory', function () {
+			clearHistory()
+		});
+
 		// points for active drawer from the turn that just ended
 
 		let tmpRow, tmpCol, tmpId;
@@ -1700,12 +1726,6 @@
 			document.getElementById(tmpIdTip).innerHTML = "Drawn by: <br><br>".concat(player);
 
 			// let tmpPic = tmpId.concat("Pic");
-			// tmpPic = c.toDataURL("image/png");
-
-			// let tmpClick = "window.open(".concat(tmpPic, ");");
-			// tmpId.onclick = function () {
-			// 	window.open(tmpPic);
-			// };
 
 			if (tmpRow == 0) {
 				switch (tmpCol) {
@@ -1848,13 +1868,6 @@
 			document.getElementById(tmpIdTip).innerHTML = "Drawn by: <br>".concat(player);
 
 			// let tmpPic = tmpId.concat("Pic");
-			// tmpPic = c.toDataURL("image/png");
-
-
-			// let tmpClick = "window.open(".concat(tmpPic, ");");
-			// tmpId.onclick = function () {
-			// 	window.open(tmpPic);
-			// };
 
 			if (tmpRow == 0) {
 				switch (tmpCol) {
@@ -2228,7 +2241,7 @@
 			letters.style.fontWeight = "bolder";
 			letters.style.color = "darkblue";
 
-			mycounter(60);													// after 60 seconds the scores are cleared and 'nextIdle' is emitted
+			mycounter(15);													// after 15 seconds the scores are cleared and 'nextIdle' is emitted
 			stopReveal = true;
 
 		});
@@ -2238,8 +2251,6 @@
 			socket.emit('clearCanvas');
 			clearScores();
 			closeScoreNav();
-
-			clearHistory();
 
 			myTurn = true;													// enable drawing for everybody again
 			clearInterval(intervalId);

@@ -9,7 +9,7 @@
 * open a browser of your choice and go to port 3000 of your own IP-address using "localhost:3000" or "[IP-address]:3000" 
 * *(optional: - to see the transfer of data in action, open another tab/window to the same address and create a second client)*
 
-* create your own word lists as .csv files and play with friends (**The first line of all .csv files has to be `SkribbleWort`!!!**)
+* create your own word lists as .csv files and play with friends **(The first line of all .csv files has to be `SkribbleWort`!!!)**
 
 ---
 
@@ -31,7 +31,7 @@ Further reading:
 
 ---
 
-### possible **ToDo:**
+### **possible ToDo/Improvements:**
 
 * [ ] improve design of scoreboard
 * [ ] test functionality for late players (join after game has started)
