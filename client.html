@@ -860,7 +860,7 @@
 			<button class="GameSetup" id="SetupGame" onClick="openConfigNav();">Setup Game</button>
 
 			<button class="GameSetup" id="viewImageButton" onClick="viewImage();">View image
-				<i class='fas fa-clone' style="float: right; font-size: large; margin-top: 0.2rem;"
+				<i class="fas fa-clone" style="float: right; font-size: large; margin-top: 0.2rem;"
 					id="viewImageIcon"></i>
 			</button>
 
@@ -927,7 +927,8 @@
 
 			<form id="chat-form" action="">
 				<!-- text input field, sits at the very bottom -->
-				<input id="input" autocomplete="off" autofocus /><button>Send</button>
+				<input id="input" autocomplete="off" onfocus="disallowShortcuts();"
+					onblur="allowShortcuts();" /><button>Send</button>
 			</form>
 
 		</div>
@@ -981,6 +982,7 @@
 		var stopReveal = false;								// stops the revealing of letters during word selection (pausePhase) and after the word has been guessed correctly
 		var stopGuessing = false;							// stops guesses after the word has been guessed correctly to avoid duplicates
 		var gameAllowed = true;
+		let shortcutsAllowed = true;
 
 		var numberPlayers;
 		var numTurns;
@@ -1003,6 +1005,67 @@
 		// array of all the usernames that are not allowed because these HTML-IDs are already in use or the grammar of the winning message would not work
 		var forbiddenNames = ['username', 'username-form', 'messages', 'chat-form', 'input', 'users', 'myNav', 'row', 'left', 'right', 'user-list', 'myCanvas', 'sizes', 'bottomRow', 'lw2', 'lw5', 'lw10', 'lw20', 'lw50', 'red', 'yellow', 'green', 'cyan', 'blue', 'purple', 'black', 'grey', 'white', 'clear', 'counter', 'configNav', 'config-form', 'numPlayers', 'numRounds', 'numSeconds', 'topRow', 'letters', 'GameStart', 'SetupGame', 'scoreboard', 'test', 'test1', 'test2', 'I', 'You'];
 
+		// keyboard shortcuts
+
+		document.addEventListener("keydown", e => {
+			// e.preventDefault();								// prevent default keyboard shortcuts
+
+			if (e.key.toLowerCase() == "1" && gameAllowed) {	// quick game setup for testing purposes
+				e.preventDefault();
+				numPlayers.value = 2;
+				numRounds.value = 1;
+				numSeconds.value = 30;
+				startGame();
+			} else if (shortcutsAllowed) {
+				shortcut(e.keyCode);
+			} else {
+				return;
+			}
+
+		});
+
+		// assing shortcuts to specific keys
+		function shortcut(keyCode) {
+			switch (keyCode) {
+				case 67: 									// c
+					clearCanvas();
+					break;
+				case 69: 									// e
+					toggleEraser();
+					break;
+				case 70: 									// f
+					fillCanvas();
+					break;
+				case 72: 									// h
+					toggleScoreNav();
+					break;
+				case 73: 									// i
+					equipEyedropper();
+					break;
+				case 171: 									// +
+					increaseSize();
+					break;
+				case 173: 									// -
+					decreaseSize();
+					break;
+				case 38: 									// arrow up
+					increaseSize();
+					break;
+				case 40: 									// arrow down
+					decreaseSize();
+					break;
+				default:
+					break;
+			}
+		}
+
+		function disallowShortcuts() {
+			shortcutsAllowed = false;
+		}
+
+		function allowShortcuts() {
+			shortcutsAllowed = true;
+		}
 
 		/// canvas setup and drawing functionality
 
@@ -1049,6 +1112,7 @@
 
 		var colorSelection = ctx.strokeStyle.slice();		// copy selected stroke color
 		var sizeSelection = "5";							// set default linewidth to five
+		let oldSize;
 
 		var mouseX, mouseY, moving, mouseDown = 0;
 
@@ -1222,9 +1286,47 @@
 
 		// change linewidth and indicate changes via button color, text color and transformation (pressed down)
 
+		function increaseSize() {
+			switch (eval(sizeSelection)) {					// change size based on previous size; eval() will convert to number
+				case 2:
+					changeSize(5);
+					break;
+				case 5:
+					changeSize(10);
+					break;
+				case 10:
+					changeSize(20);
+					break;
+				case 20:
+					changeSize(50);
+					break;
+				default:									// previous size is already max (50)
+					break;
+			}
+		}
+
+		function decreaseSize() {
+			switch (eval(sizeSelection)) {					// change size based on previous size; eval() will convert to number
+				case 5:
+					changeSize(2);
+					break;
+				case 10:
+					changeSize(5);
+					break;
+				case 20:
+					changeSize(10);
+					break;
+				case 50:
+					changeSize(20);
+					break;
+				default:									// previous size is already min (2)
+					break;
+			}
+		}
+
 		function changeSize(newSize) {
 
-			var oldSize = sizeSelection;							// copy old linewidth so that its button can be reset
+			oldSize = sizeSelection;							// copy old linewidth so that its button can be reset
 			let tmpString1 = "lw".concat("", oldSize);				// attach linewidth to "lw" e.q. tmpString = "lw5"
 			let tmpString2 = "lw".concat("", newSize);
 
@@ -1324,7 +1426,7 @@
 
 		function closeNav() {											// close the overlay and set the cursor to the text input field, called when user submits username
 			document.getElementById("myNav").style.width = "0%";
-			input.focus();
+			// input.focus();
 
 			//openScoreNav();
 		}
@@ -2210,7 +2312,8 @@
 				socket.emit('Words3');
 				myTurn = true;
 				openWordNav();
-				colorSelection = "black";									// set default color to black
+				// colorSelection = "black";									// set default color to black
+				input.blur();												// remove focus from input (enabling shortcuts)
 			} else {
 				myTurn = false;												// disable drawing
 				colorSelection = "transparent";								// disable selecting other colors
@@ -2235,6 +2338,7 @@
 			insertWinner();
 
 			openScoreNav();
+			input.blur();
 
 			letters.innerHTML = "Game Over";
 			letters.style.fontSize = "3rem";
@@ -2254,6 +2358,7 @@
 
 			myTurn = true;													// enable drawing for everybody again
 			clearInterval(intervalId);
+			input.blur();
 
 			counter.innerHTML = "Waiting for a new game to be started";
 			letters.innerHTML = "";
@@ -2268,7 +2373,6 @@
 		socket.emit('checkClients');										// request currently connected users to display their names
 
 		openNav();															// open overlay immediately when the page gets loaded
-
 
 	</script>
 

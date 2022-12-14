@@ -1,4 +1,4 @@
-## How To Use:
+# How To Use
 
 * download node.js [here](https://nodejs.dev/download/ "node.js downloads") and install it
 * open node.js command prompt
@@ -6,7 +6,7 @@
 * enter `npm install socket.io --save`
 * navigate to the location of this folder using `cd [directory]` to go deeper into the tree, `cd ..` to go up one step or `cd /` to return to C:
 * run the server file by entering `node server.js`
-* open a browser of your choice and go to port 3000 of your own IP-address using "localhost:3000" or "[IP-address]:3000" 
+* open a browser of your choice and go to port 3000 of your own IP-address using "localhost:3000" or "[IP-address]:3000"
 * *(optional: - to see the transfer of data in action, open another tab/window to the same address and create a second client)*
 
 * create your own word lists as .csv files and play with friends **(The first line of all .csv files has to be `SkribbleWort`!!!)**
@@ -28,6 +28,18 @@ Further reading:
 > [JS Map](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global\_Objects/Map "Useful for assigning usernames to sockets (serverside)")
 >
 > [JS Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global\_Objects/Promise "Needed because currently connected sockets are saved as a promise")
+
+---
+
+## List of Shortcuts
+
+* *e* => toggle the eraser
+* *f* => fill with current color
+* *c* => clear the drawing area
+* *h* => toggle history
+* *i* => equip the eyedropper
+* *\+* or *arrow up* => increase linewidth
+* *\-* or *arrow down* => decrease linewidth
 
 ---
 
