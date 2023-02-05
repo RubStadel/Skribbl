@@ -1010,7 +1010,7 @@
 		document.addEventListener("keydown", e => {
 			// e.preventDefault();								// prevent default keyboard shortcuts
 
-			if (e.key.toLowerCase() == "1" && gameAllowed) {	// quick game setup for testing purposes
+			if (e.key.toLowerCase() == "1" && gameAllowed && shortcutsAllowed) {	// quick game setup for testing purposes
 				e.preventDefault();
 				numPlayers.value = 2;
 				numRounds.value = 1;
@@ -1440,18 +1440,19 @@
 		}
 
 		function openConfigNav() {
-			//closeScoreNav();
 			if (gameAllowed) {
 				document.getElementById("configNav").style.width = "100%";
 				numPlayers.focus();
 
 				socket.emit('clearHistory');											// clear the links to pictures from previous game
 
+				disallowShortcuts();
 			} else return;
 
 		}
 
 		function closeConfigNav() {
+			allowShortcuts();
 			document.getElementById("configNav").style.width = "0%";
 			input.focus();
 		}
