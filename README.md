@@ -1,9 +1,10 @@
 # How To Use
 
-* download node.js [here](https://nodejs.dev/download/ "node.js downloads") and install it
+* download node.js [here](https://nodejs.org/en "node.js downloads") and install it
 * open node.js command prompt
 * enter `npm install express@4 --save`
 * enter `npm install socket.io --save`
+* enter `npm install csv-parser --save`
 * navigate to the location of this folder using `cd [directory]` to go deeper into the tree, `cd ..` to go up one step or `cd /` to return to C:
 * run the server file by entering `node server.js`
 * open a browser of your choice and go to port 3000 of your own IP-address using "localhost:3000" or "[IP-address]:3000"
