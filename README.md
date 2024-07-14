@@ -12,6 +12,8 @@
 
 * create your own word lists as .csv files and play with friends **(The first line of all .csv files has to be `SkribbleWort`!!!)**
 
+![Home screen showing users, color selection and chat.](./resources/homeScreen.png)
+
 ---
 
 Further reading:
