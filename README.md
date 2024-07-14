@@ -1,4 +1,10 @@
-# How To Use
+# Skribbl 
+
+Student project building a multiplayer drawing and guessing game for the browser.
+
+![Home screen showing users, color selection and chat.](./resources/homeScreen.png)
+
+## How To Use
 
 * download node.js [here](https://nodejs.org/en "node.js downloads") and install it
 * open node.js command prompt
@@ -11,8 +17,6 @@
 * *(optional: - to see the transfer of data in action, open another tab/window to the same address and create a second client)*
 
 * create your own word lists as .csv files and play with friends **(The first line of all .csv files has to be `SkribbleWort`!!!)**
-
-![Home screen showing users, color selection and chat.](./resources/homeScreen.png)
 
 ---
 
